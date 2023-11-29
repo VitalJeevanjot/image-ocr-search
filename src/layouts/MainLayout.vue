@@ -18,7 +18,7 @@
           @click="toggleLeftDrawer"
         /> -->
 
-        <q-toolbar-title> Image template search </q-toolbar-title>
+        <q-toolbar-title> Image OCR search </q-toolbar-title>
         <!-- <div>ocrs</div> -->
         <!-- <div>characters</div>
         <div>faces</div> -->

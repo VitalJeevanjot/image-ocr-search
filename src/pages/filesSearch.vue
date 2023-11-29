@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { Notify } from "quasar";
+import { Notify, copyToClipboard } from "quasar";
 
 export default {
   name: "FilesSearch",
@@ -83,7 +83,17 @@ export default {
     goBack() {
       this.$router.back();
     },
-
+    async copyPickedPath(path) {
+      copyToClipboard(path)
+        .then(() => {
+          // success!
+          Notify.create({ message: "📋 Copied to clipboard" });
+        })
+        .catch(() => {
+          // fail
+          Notify.create({ message: error?.toString() + " " + "❌" });
+        });
+    },
     async selectSourceImageFile() {
       this.selectImageToSearch = await window.imgSearchAPI.selectFile();
       this.searchImages();

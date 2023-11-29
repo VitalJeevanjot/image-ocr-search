@@ -12,18 +12,20 @@
       />
     </div>
 
-    <!-- <SearchHistory /> -->
+    <div class="row justify-center">
+      <SearchHistory />
+    </div>
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import SearchHistory from "./searchHistory.vue";
+import SearchHistory from "components/SearchHistory.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
-    // SearchHistory,
+    SearchHistory,
   },
   methods: {
     // gotResult(error, results) {
