@@ -11,16 +11,6 @@
         @click="goBack"
       />
       <q-space />
-      <q-btn
-        icon="content_paste"
-        round
-        unelevated
-        size="sm"
-        class="self-center q-ml-sm text-grey-2"
-        style="background-color: rgb(49, 49, 49)"
-        @click="copyPickedPath(path)"
-        ><q-tooltip>Copy Picked Path</q-tooltip></q-btn
-      >
       <!-- <span class="self-center text-white text-title q-mr-lg">
         Image search
       </span>
@@ -36,8 +26,21 @@
         @click="selectSourceImageFile"
         ><q-tooltip>Pick image to search</q-tooltip></q-btn
       >
-      <span class="text-caption self-center q-ml-sm text-grey"
+      <span
+        class="text-caption self-center q-ml-sm text-grey"
+        v-if="selectImageToSearch"
         >Path: {{ selectImageToSearch }}</span
+      >
+      <q-btn
+        icon="content_paste"
+        round
+        unelevated
+        size="sm"
+        class="self-center q-ml-sm text-grey-2"
+        style="background-color: rgb(49, 49, 49)"
+        v-if="selectImageToSearch"
+        @click="copyPickedPath(path)"
+        ><q-tooltip>Copy Picked Path</q-tooltip></q-btn
       >
     </div>
     <div
@@ -84,6 +87,10 @@ export default {
       this.$router.back();
     },
     async copyPickedPath(path) {
+      if (!path) {
+        Notify.create({ message: "⚠️ Please select a path first" });
+        return;
+      }
       copyToClipboard(path)
         .then(() => {
           // success!

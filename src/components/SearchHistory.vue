@@ -15,11 +15,19 @@
           min-width: 220px;
           min-height: 80px;
           width: 70vw;
-          height: 10vh;
           border-radius: 25px;
         "
       >
         <q-card-section>Hello</q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            style="border: black 2px solid"
+            class="text-black bg-grey-3"
+            round
+            icon="arrow_right_alt"
+          />
+        </q-card-actions>
       </q-card>
     </div>
   </div>
@@ -27,20 +35,21 @@
 
 <style scoped>
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 15px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(33, 43, 43);
+  background: rgb(16, 22, 22);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(66, 68, 68);
+  background: rgb(113, 117, 117);
+  border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #646464;
+  background: #adadad;
 }
 
 #button_main {
