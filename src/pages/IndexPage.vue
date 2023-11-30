@@ -12,7 +12,7 @@
       />
     </div>
 
-    <div class="row justify-center">
+    <div class="row justify-center q-pt-md">
       <SearchHistory />
     </div>
   </q-page>

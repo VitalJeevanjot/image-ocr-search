@@ -4,10 +4,11 @@
       overflow-y: scroll;
       width: 72vw;
       height: 75vh;
-      border: rgba(242, 242, 242, 0.8) 2px solid;
+      border: rgba(255, 255, 255, 0.5) 2px solid;
       border-radius: 10px;
     "
   >
+    <p class="text-subtitle1 q-ma-sm text-white">Recent searches:</p>
     <div class="row justify-center" v-for="i in 100" :key="i">
       <q-card
         class="q-my-sm"
@@ -16,6 +17,8 @@
           min-height: 80px;
           width: 70vw;
           border-radius: 25px;
+          background-color: #2a3737;
+          color: white;
         "
       >
         <q-card-section>Hello</q-card-section>
@@ -38,18 +41,18 @@
   width: 15px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(16, 22, 22);
-  border-radius: 10px;
+  background: #2a3737;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-track {
   background: rgb(113, 117, 117);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #adadad;
+  background: #354444;
 }
 
 #button_main {

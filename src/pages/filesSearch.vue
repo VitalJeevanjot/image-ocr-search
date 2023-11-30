@@ -23,8 +23,8 @@
         round
         style="text-transform: capitalize"
         unelevated
-        @click="selectSourceImageFile"
-        ><q-tooltip>Pick image to search</q-tooltip></q-btn
+        @click="selectFolderToSearchFromAndSearch"
+        ><q-tooltip>Pick folder to start indexing.</q-tooltip></q-btn
       >
       <span
         class="text-caption self-center q-ml-sm text-grey"
@@ -105,13 +105,15 @@ export default {
       this.selectImageToSearch = await window.imgSearchAPI.selectFile();
       this.searchImages();
     },
-    // async selectFolderToSearchFromAndSearch() {
-    //   const { filesPaths, folderPaths } =
-    //     await window.imgSearchAPI.openFolder();
-    //   this.selectFoldersToSearchFrom = folderPaths;
-    //   window.totalSelectedPaths = filesPaths;
-    //   this.searchImages(filesPaths);
-    // },
+    async selectFolderToSearchFromAndSearch() {
+      const { filesPaths, folderPaths } =
+        await window.imgSearchAPI.openFolder();
+      console.log(filesPaths);
+      console.log(folderPaths);
+      // this.selectFoldersToSearchFrom = folderPaths;
+      // window.totalSelectedPaths = filesPaths;
+      // this.searchImages(filesPaths);
+    },
 
     async searchImages() {
       // let canvas1 = document.createElement("canvas")
