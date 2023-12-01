@@ -10,7 +10,7 @@
     "
   >
     <p class="text-subtitle1 q-ma-sm text-white">Indexed paths:</p>
-    <div class="row justify-center" v-for="i in 100" :key="i">
+    <div class="row justify-center" v-for="value in stored_paths" :key="value">
       <q-card
         class="q-ma-sm"
         style="
@@ -22,7 +22,17 @@
           color: white;
         "
       >
-        <q-card-section>Hello</q-card-section>
+        <q-card-section
+          >{{ value }}
+          <q-btn
+            dense
+            round
+            icon="edit"
+            class="bg-grey-10 q-ml-sm"
+            size="0.5rem"
+            ><q-tooltip>Edit name</q-tooltip></q-btn
+          ></q-card-section
+        >
         <q-card-actions align="right">
           <q-btn
             flat
@@ -63,10 +73,29 @@
 }
 </style>
 <script>
+import { LocalStorage } from "quasar";
 export default {
   // name: 'ComponentName',
-  setup() {
-    return {};
+  data() {
+    return {
+      stored_paths: [],
+    };
+  },
+  mounted() {
+    var all_stored_paths = LocalStorage.getAll();
+    var all_keys = Object.keys(all_stored_paths);
+    // console.log(all_keys);
+    for (var i = 0; i < all_keys.length; i++) {
+      if (all_keys[i].split("__££__")[1] == "image_ocr_search") {
+        if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
+          this.stored_paths.push(all_keys[i].split("__££__")[0]);
+        } else {
+          this.stored_paths.push(
+            LocalStorage.getItem(all_keys[i]).split("__££__")[1]
+          );
+        }
+      }
+    }
   },
 };
 </script>

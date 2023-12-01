@@ -153,10 +153,10 @@ export default {
     async startIndexing() {
       this.total_selected_files = this.selectedFilePaths.length;
       this.progress_value = 0;
-      var _uuid = crypto.randomUUID;
+      var _uuid = crypto.randomUUID();
       // name, selected_folders_path, uuid
       LocalStorage.set(
-        _uuid.toString(),
+        _uuid.toString() + "__££__" + "image_ocr_search",
         this.selectedFoldersToSearchFrom + "__££__" + " "
       );
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
@@ -164,16 +164,17 @@ export default {
           break;
         }
         this.selectedImageToSearch = this.selectedFilePaths[i];
-        await this.getImgeAndProcess();
+        var _text_data = await this.getImgeAndProcess();
         this.progress_value = parseInt(
           ((i + 1) / this.selectedFilePaths.length) * 100
         );
         this.processed_files = i + 1;
         var d = new Date();
-        await window.indexedDB.pathsIndexed.add({
+        await window.indexedDb.pathsIndexed.add({
           uuid: _uuid,
           processed_date: d.toLocaleString(),
           img_path: this.selectedFilePaths[i],
+          text_data: _text_data,
         });
         // parseInt(
         //   ((this.selectedFilePaths.length / 100) * (i + 1) * 100) /
@@ -194,7 +195,7 @@ export default {
         this.selectedImageToSearch
       );
       // imgSource.src = imgDataUrlSource;
-      await this.processImage(imgDataUrlSource);
+      return await this.processImage(imgDataUrlSource);
       // imgSource.onload = async () => {
       //   await this.processImage(paths, imgDataUrlSource);
       // };
@@ -206,6 +207,7 @@ export default {
       } = await worker.recognize(img);
       console.log(text);
       await worker.terminate();
+      return text;
       // if (paths.length) {
       //   try {
       //     let val = paths.pop();

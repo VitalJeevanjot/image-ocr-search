@@ -173,7 +173,7 @@ export default defineComponent({
     //   modelsTrained: "++id, uuid, name, path",
     // });
     window.indexedDb.version(1).stores({
-      pathsIndexed: "++id, uuid, processed_date, img_path",
+      pathsIndexed: "++id, uuid, processed_date, img_path, text_data",
       // modelsTrained: "++id, uuid, name, path",
     });
   },
