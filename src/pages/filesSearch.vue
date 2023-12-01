@@ -164,12 +164,21 @@ export default {
           "__££__" +
           n_d.toLocaleString()
       );
+      const worker = await Tesseract.createWorker("eng");
+
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
         if (this.start_indexing == false) {
           break;
         }
         this.selectedImageToSearch = this.selectedFilePaths[i];
-        var _text_data = await this.getImgeAndProcess();
+
+        let imgDataUrlSource = await window.imgSearchAPI.getImage(
+          this.selectedImageToSearch
+        );
+        const {
+          data: { text },
+        } = await worker.recognize(imgDataUrlSource);
+
         this.progress_value = parseInt(
           ((i + 1) / this.selectedFilePaths.length) * 100
         );
@@ -179,92 +188,13 @@ export default {
           uuid: _uuid,
           processed_date: d.toLocaleString(),
           img_path: this.selectedFilePaths[i],
-          text_data: _text_data,
+          text_data: text,
         });
-        // parseInt(
-        //   ((this.selectedFilePaths.length / 100) * (i + 1) * 100) /
-        //     this.selectedFilePaths.length
-        // );
         if (i == this.selectedFilePaths.length - 1) {
           this.start_indexing = false;
         }
       }
-    },
-
-    async getImgeAndProcess() {
-      // let canvas1 = document.createElement("canvas")
-      // canvas1.
-      // let imgSource;
-      // imgSource = new Image();
-      let imgDataUrlSource = await window.imgSearchAPI.getImage(
-        this.selectedImageToSearch
-      );
-      // imgSource.src = imgDataUrlSource;
-      return await this.processImage(imgDataUrlSource);
-      // imgSource.onload = async () => {
-      //   await this.processImage(paths, imgDataUrlSource);
-      // };
-    },
-    async processImage(img) {
-      const worker = await Tesseract.createWorker("eng");
-      const {
-        data: { text },
-      } = await worker.recognize(img);
-      console.log(text);
       await worker.terminate();
-      return text;
-      // if (paths.length) {
-      //   try {
-      //     let val = paths.pop();
-      //     const imgDataUrlTarget = await window.imgSearchAPI.openImage(val);
-      //     console.log(
-      //       pixelmatch(imgSource.data, imgTarget.data, {
-      //         threshold: 0.1,
-      //       })
-      //     );
-      //     imgDataUrlTarget;
-      //     //   let imgTarget;
-      //     //   imgTarget = new Image();
-      //     //   imgTarget.src = imgDataUrlTarget;
-      //     //   imgTarget.onload = async () => {
-      //     //     // const src = cv.imread(imgSource);
-      //     //     // const templ = cv.imread(imgTarget);
-      //     //     // let dst = new cv.Mat();
-      //     //     // let mask = new cv.Mat();
-      //     //     const canvasSource = document.createElement("canvas");
-      //     //     canvasSource.width = imgSource.width;
-      //     //     canvasSource.height = imgSource.height;
-      //     //     const canvas_ctx = canvasSource.getContext("2d");
-      //     //     canvas_ctx.drawImage(
-      //     //       imgSource,
-      //     //       0,
-      //     //       0,
-      //     //       imgSource.width,
-      //     //       imgSource.height
-      //     //     );
-      //     //     console.log(canvasSource.data);
-      //     //     console.log(canvas_ctx.data);
-      //     //     try {
-      //     //       console.log(
-      //     //         pixelmatch(imgSource.data, imgTarget.data, {
-      //     //           threshold: 0.1,
-      //     //         })
-      //     //       );
-      //     //       // cv.matchTemplate(src, templ, dst, cv.TM_CCOEFF, mask);
-      //     //     } catch (err) {
-      //     //       console.log(err);
-      //     //     }
-      //     //     // let result = cv.minMaxLoc(dst, mask);
-      //     //     console.log(val);
-      //     //     console.log(result);
-      //     //     this.searchedImages = this.selectedFilePaths - paths.length; // for showing the loading
-      //     //     this.processImage(paths, imgSource);
-      //     //   };
-      //   } catch (err) {
-      //     console.log(err);
-      //     Notify.create({ message: err.toString() });
-      //   }
-      // }
     },
   },
 };
