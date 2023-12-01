@@ -9,7 +9,9 @@
       background-color: #111414;
     "
   >
-    <p class="text-subtitle1 q-ma-sm text-white">Indexed paths:</p>
+    <p class="text-subtitle1 q-ma-sm text-white">
+      Indexed paths ({{ stored_paths.length }}):
+    </p>
     <div class="row justify-center" v-for="value in stored_paths" :key="value">
       <q-card
         class="q-ma-sm"

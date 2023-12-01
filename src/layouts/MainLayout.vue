@@ -167,6 +167,7 @@ export default defineComponent({
   },
   mounted() {
     window.indexedDb = new Dexie("ImagesSearch");
+    window.indexedDbTrainedData = new Dexie("keyval-store");
     // window.indexedDb.version(1).stores({
     //   imagesClassified:
     //     "++id, uuid, path, top_label, top_confidence, all_labels, all_confidence",
@@ -176,6 +177,15 @@ export default defineComponent({
       pathsIndexed: "++id, uuid, processed_date, img_path, text_data",
       // modelsTrained: "++id, uuid, name, path",
     });
+    // window.indexedDbTrainedData.version(1).stores({
+    //   keyval: "Key, Value",
+    //   // modelsTrained: "++id, uuid, name, path",
+    // });
+
+    // console.log(readAsArrayBuffer("./eng.traineddata"));
+    // window.indexedDbTrainedData.keyval.add({
+    //   Key: "./eng.traineddata"
+    // })
   },
 });
 </script>

@@ -145,8 +145,10 @@ export default {
       console.log(folderPaths);
       this.selectedFoldersToSearchFrom = folderPaths;
       this.selectedFilePaths = filesPaths;
-      this.start_indexing = true;
-      this.startIndexing();
+      if (filesPaths) {
+        this.start_indexing = true;
+        this.startIndexing();
+      }
       // this.searchImages(filesPaths);
     },
 
@@ -164,8 +166,13 @@ export default {
           "__££__" +
           n_d.toLocaleString()
       );
-      const worker = await Tesseract.createWorker("eng");
-
+      // initialize worker
+      const worker = await Tesseract.createWorker({
+        langPath: "../../public/languageData",
+      });
+      await worker.load();
+      // await worker.loadLanguage("eng");
+      // await worker.initialize("eng");
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
         if (this.start_indexing == false) {
           break;
@@ -194,6 +201,7 @@ export default {
           this.start_indexing = false;
         }
       }
+      // terminate worker
       await worker.terminate();
     },
   },
