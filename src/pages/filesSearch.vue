@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { Notify, copyToClipboard } from "quasar";
+import { Notify, copyToClipboard, LocalStorage } from "quasar";
 
 export default {
   name: "FilesSearch",
@@ -153,6 +153,12 @@ export default {
     async startIndexing() {
       this.total_selected_files = this.selectedFilePaths.length;
       this.progress_value = 0;
+      var _uuid = crypto.randomUUID;
+      // name, selected_folders_path, uuid
+      LocalStorage.set(
+        _uuid.toString(),
+        this.selectedFoldersToSearchFrom + "__££__" + " "
+      );
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
         if (this.start_indexing == false) {
           break;
@@ -163,10 +169,19 @@ export default {
           ((i + 1) / this.selectedFilePaths.length) * 100
         );
         this.processed_files = i + 1;
+        var d = new Date();
+        await window.indexedDB.pathsIndexed.add({
+          uuid: _uuid,
+          processed_date: d.toLocaleString(),
+          img_path: this.selectedFilePaths[i],
+        });
         // parseInt(
         //   ((this.selectedFilePaths.length / 100) * (i + 1) * 100) /
         //     this.selectedFilePaths.length
         // );
+        if (i == this.selectedFilePaths.length - 1) {
+          this.start_indexing = false;
+        }
       }
     },
 

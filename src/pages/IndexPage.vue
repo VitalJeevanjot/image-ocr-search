@@ -3,10 +3,10 @@
     <div class="row q-ma-sm justify-center" id="container">
       <q-btn
         class="q-ma-sm q-px-sm"
-        label="Search"
+        label="Start indexing"
         dense
         flat
-        icon="image_search"
+        icon="folder_open"
         id="button_main"
         @click="$router.push('/filesSearch')"
       />

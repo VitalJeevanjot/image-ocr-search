@@ -9,7 +9,7 @@
       background-color: #111414;
     "
   >
-    <p class="text-subtitle1 q-ma-sm text-white">Recent searches:</p>
+    <p class="text-subtitle1 q-ma-sm text-white">Indexed paths:</p>
     <div class="row justify-center" v-for="i in 100" :key="i">
       <q-card
         class="q-ma-sm"
@@ -29,7 +29,7 @@
             style="border: black 2px solid"
             class="text-black bg-grey-3"
             round
-            icon="arrow_right_alt"
+            icon="image_search"
           />
         </q-card-actions>
       </q-card>

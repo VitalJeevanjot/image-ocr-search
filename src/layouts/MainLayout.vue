@@ -167,10 +167,14 @@ export default defineComponent({
   },
   mounted() {
     window.indexedDb = new Dexie("ImagesSearch");
+    // window.indexedDb.version(1).stores({
+    //   imagesClassified:
+    //     "++id, uuid, path, top_label, top_confidence, all_labels, all_confidence",
+    //   modelsTrained: "++id, uuid, name, path",
+    // });
     window.indexedDb.version(1).stores({
-      imagesClassified:
-        "++id, uuid, path, top_label, top_confidence, all_labels, all_confidence",
-      modelsTrained: "++id, uuid, name, path",
+      pathsIndexed: "++id, uuid, processed_date, img_path",
+      // modelsTrained: "++id, uuid, name, path",
     });
   },
 });
