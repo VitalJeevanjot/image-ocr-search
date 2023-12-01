@@ -110,7 +110,7 @@ export default {
       progress_value: 0,
       processed_files: 0,
       total_selected_files: 0,
-      start_indexing: true,
+      start_indexing: false,
     };
   },
   mounted() {},
