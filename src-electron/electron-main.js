@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, nativeImage, ipcMain } from "electron";
 import { readdir, stat, readFile } from "node:fs/promises";
 import path from "path";
 import os from "os";
+import Tesseract from "tesseract.js";
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -12,6 +13,7 @@ function createWindow() {
   /**
    * Initial window options
    */
+  // console.log(path.resolve(__dirname));
   mainWindow = new BrowserWindow({
     icon: path.resolve(__dirname, "icons/icon.png"), // tray icon
     width: 1000,
@@ -99,14 +101,19 @@ async function handleFolderOpen(event) {
   if (!canceled) {
     let dirContent = [];
     let filesPaths = [];
+    console.log(path.resolve("./public/languageData"));
+    const worker = await Tesseract.createWorker("eng", 1, {
+      langPath: path.resolve("./public/languageData"),
+    });
+
     try {
       for (let i = 0; i < folderPaths?.length; i++) {
         dirContent = await readdir(folderPaths[i]);
-        console.log(dirContent);
+        // console.log(dirContent);
         for (let k = 0; k < dirContent?.length; k++) {
           const stats = await stat(`${folderPaths[i]}\\${dirContent[k]}`);
           const imageType = isImage(dirContent[k]);
-          console.log(k);
+          // console.log(k);
           if (stats.isFile() && imageType) {
             try {
               filesPaths.push(`${folderPaths[i]}\\${dirContent[k]}`);
@@ -115,8 +122,18 @@ async function handleFolderOpen(event) {
               console.log(err);
             }
           }
+          const {
+            data: { text },
+          } = await worker.recognize(`${folderPaths[i]}\\${dirContent[k]}`);
+          console.log(text);
+          console.log(
+            "------------------------------- " +
+              k +
+              "-------------------------------"
+          );
         }
       }
+      await worker.terminate();
     } catch (err) {
       console.log("err1");
       console.log(err);

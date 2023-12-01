@@ -167,12 +167,13 @@ export default {
           n_d.toLocaleString()
       );
       // initialize worker
-      const worker = await Tesseract.createWorker({
-        langPath: "../../public/languageData",
-      });
-      await worker.load();
+      // const worker = await Tesseract.createWorker({
+      //   langPath: "../../public/languageData",
+      // });
+      // await worker.load();
       // await worker.loadLanguage("eng");
       // await worker.initialize("eng");
+
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
         if (this.start_indexing == false) {
           break;
@@ -182,9 +183,10 @@ export default {
         let imgDataUrlSource = await window.imgSearchAPI.getImage(
           this.selectedImageToSearch
         );
-        const {
-          data: { text },
-        } = await worker.recognize(imgDataUrlSource);
+
+        // const {
+        //   data: { text },
+        // } = await worker.recognize(imgDataUrlSource);
 
         this.progress_value = parseInt(
           ((i + 1) / this.selectedFilePaths.length) * 100
@@ -202,7 +204,7 @@ export default {
         }
       }
       // terminate worker
-      await worker.terminate();
+      // await worker.terminate();
     },
   },
 };
