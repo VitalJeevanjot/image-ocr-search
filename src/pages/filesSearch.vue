@@ -53,17 +53,18 @@
         <q-tooltip>Select folder to search from and Start search</q-tooltip>
       </q-btn>
     </div> -->
-    <div class="row justify-center q-mt-sm" v-if="start_indexing">
+    <div class="row justify-center q-mt-lg" v-if="start_indexing">
       <q-btn
         dense
         round
+        size="0.5rem"
         icon="close"
         class="bg-red-9 text-white"
         @click="start_indexing = false"
         ><q-tooltip>Stop processing</q-tooltip></q-btn
       >
     </div>
-    <div class="row justify-center q-mt-sm">
+    <div class="row justify-center q-mt-xs">
       <q-circular-progress
         show-value
         class="text-white q-ma-md"
