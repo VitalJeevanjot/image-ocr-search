@@ -23,7 +23,7 @@
         "
       >
         <q-card-section
-          >{{ value }}
+          >{{ value.split("__££__")[0] }}
           <q-btn
             dense
             round
@@ -33,6 +33,9 @@
             ><q-tooltip>Edit name</q-tooltip></q-btn
           ></q-card-section
         >
+        <p class="q-ml-md text-grey-5 text-caption">
+          {{ value.split("__££__")[1] }}
+        </p>
         <q-card-actions align="right">
           <q-btn
             flat
@@ -88,7 +91,11 @@ export default {
     for (var i = 0; i < all_keys.length; i++) {
       if (all_keys[i].split("__££__")[1] == "image_ocr_search") {
         if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
-          this.stored_paths.push(all_keys[i].split("__££__")[0]);
+          this.stored_paths.push(
+            all_keys[i].split("__££__")[0] +
+              "__££__" +
+              LocalStorage.getItem(all_keys[i]).split("__££__")[2]
+          );
         } else {
           this.stored_paths.push(
             LocalStorage.getItem(all_keys[i]).split("__££__")[1]

@@ -154,10 +154,15 @@ export default {
       this.total_selected_files = this.selectedFilePaths.length;
       this.progress_value = 0;
       var _uuid = crypto.randomUUID();
+      var n_d = new Date();
       // name, selected_folders_path, uuid
       LocalStorage.set(
         _uuid.toString() + "__££__" + "image_ocr_search",
-        this.selectedFoldersToSearchFrom + "__££__" + " "
+        this.selectedFoldersToSearchFrom +
+          "__££__" +
+          " " +
+          "__££__" +
+          n_d.toLocaleString()
       );
       for (var i = 0; i < this.selectedFilePaths.length; i++) {
         if (this.start_indexing == false) {
