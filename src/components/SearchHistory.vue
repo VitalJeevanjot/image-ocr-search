@@ -6,12 +6,13 @@
       height: 75vh;
       border: rgba(255, 255, 255, 0.5) 2px solid;
       border-radius: 10px;
+      background-color: #111414;
     "
   >
     <p class="text-subtitle1 q-ma-sm text-white">Recent searches:</p>
     <div class="row justify-center" v-for="i in 100" :key="i">
       <q-card
-        class="q-my-sm"
+        class="q-ma-sm"
         style="
           min-width: 220px;
           min-height: 80px;

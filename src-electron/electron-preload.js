@@ -37,7 +37,7 @@ contextBridge.exposeInMainWorld("imgSearchAPI", {
   openFolder: async () => {
     return await ipcRenderer.invoke("open-folder");
   },
-  openImage: async (path) => {
+  getImage: async (path) => {
     return await ipcRenderer.invoke("get-img", path);
   },
 });

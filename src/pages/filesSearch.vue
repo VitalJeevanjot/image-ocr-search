@@ -18,18 +18,13 @@
     </div>
     <div class="row justify-center" id="container">
       <q-btn
-        icon="search"
+        icon="folder_open"
         id="button_main"
         round
         style="text-transform: capitalize"
         unelevated
         @click="selectFolderToSearchFromAndSearch"
         ><q-tooltip>Pick folder to start indexing.</q-tooltip></q-btn
-      >
-      <span
-        class="text-caption self-center q-ml-sm text-grey"
-        v-if="selectImageToSearch"
-        >Path: {{ selectImageToSearch }}</span
       >
       <q-btn
         icon="content_paste"
@@ -38,15 +33,15 @@
         size="sm"
         class="self-center q-ml-sm text-grey-2"
         style="background-color: rgb(49, 49, 49)"
-        v-if="selectImageToSearch"
-        @click="copyPickedPath(path)"
-        ><q-tooltip>Copy Picked Path</q-tooltip></q-btn
+        v-if="selectedFoldersToSearchFrom"
+        @click="copyPickedPath(selectedFoldersToSearchFrom)"
+        ><q-tooltip>Copy Picked Path(s)</q-tooltip></q-btn
       >
     </div>
-    <div
+    <!-- <div
       class="row justify-center q-mt-sm"
       id="container"
-      v-if="selectImageToSearch"
+      v-if="selectedImageToSearch"
     >
       <q-btn
         round
@@ -57,11 +52,43 @@
       >
         <q-tooltip>Select folder to search from and Start search</q-tooltip>
       </q-btn>
+    </div> -->
+    <div class="row justify-center q-mt-sm" v-if="start_indexing">
+      <q-btn
+        dense
+        round
+        icon="close"
+        class="bg-red-9 text-white"
+        @click="start_indexing = false"
+        ><q-tooltip>Stop processing</q-tooltip></q-btn
+      >
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="progress_value"
+        size="90px"
+        :thickness="0.2"
+        color="grey-7"
+        center-color="grey-9"
+        track-color="transparent"
+      >
+        {{ progress_value }}%
+      </q-circular-progress>
+    </div>
+    <div class="row justify-center q-mt-sm" v-if="start_indexing">
+      <q-spinner color="grey-8" size="1rem" />
+    </div>
+    <div class="row justify-center q-mt-sm">
+      <p class="text-caption text-grey-7">
+        {{ processed_files }} / {{ total_selected_files }}
+      </p>
     </div>
     <div
       class="row justify-center q-mt-sm"
       id="container"
-      v-for="path in selectFoldersToSearchFrom"
+      v-for="path in selectedFoldersToSearchFrom"
       :key="path"
     >
       <p class="text-caption self-center q-ml-sm text-grey">Path: {{ path }}</p>
@@ -76,9 +103,14 @@ export default {
   name: "FilesSearch",
   data() {
     return {
-      selectImageToSearch: "",
-      selectFoldersToSearchFrom: "",
+      selectedImageToSearch: "",
+      selectedFoldersToSearchFrom: null,
+      selectedFilePaths: null,
       searchedImages: 0,
+      progress_value: 0,
+      processed_files: 0,
+      total_selected_files: 0,
+      start_indexing: true,
     };
   },
   mounted() {},
@@ -101,27 +133,49 @@ export default {
           Notify.create({ message: error?.toString() + " " + "❌" });
         });
     },
-    async selectSourceImageFile() {
-      this.selectImageToSearch = await window.imgSearchAPI.selectFile();
-      this.searchImages();
-    },
+    // async selectSourceImageFile() {
+    //   this.selectedImageToSearch = await window.imgSearchAPI.selectFile();
+    //   this.searchImages();
+    // },
     async selectFolderToSearchFromAndSearch() {
       const { filesPaths, folderPaths } =
         await window.imgSearchAPI.openFolder();
       console.log(filesPaths);
       console.log(folderPaths);
-      // this.selectFoldersToSearchFrom = folderPaths;
-      // window.totalSelectedPaths = filesPaths;
+      this.selectedFoldersToSearchFrom = folderPaths;
+      this.selectedFilePaths = filesPaths;
+      this.start_indexing = true;
+      this.startIndexing();
       // this.searchImages(filesPaths);
     },
 
-    async searchImages() {
+    async startIndexing() {
+      this.total_selected_files = this.selectedFilePaths.length;
+      this.progress_value = 0;
+      for (var i = 0; i < this.selectedFilePaths.length; i++) {
+        if (this.start_indexing == false) {
+          break;
+        }
+        this.selectedImageToSearch = this.selectedFilePaths[i];
+        await this.getImgeAndProcess();
+        this.progress_value = parseInt(
+          ((i + 1) / this.selectedFilePaths.length) * 100
+        );
+        this.processed_files = i + 1;
+        // parseInt(
+        //   ((this.selectedFilePaths.length / 100) * (i + 1) * 100) /
+        //     this.selectedFilePaths.length
+        // );
+      }
+    },
+
+    async getImgeAndProcess() {
       // let canvas1 = document.createElement("canvas")
       // canvas1.
       // let imgSource;
       // imgSource = new Image();
-      let imgDataUrlSource = await window.imgSearchAPI.openImage(
-        this.selectImageToSearch
+      let imgDataUrlSource = await window.imgSearchAPI.getImage(
+        this.selectedImageToSearch
       );
       // imgSource.src = imgDataUrlSource;
       await this.processImage(imgDataUrlSource);
@@ -180,7 +234,7 @@ export default {
       //     //     // let result = cv.minMaxLoc(dst, mask);
       //     //     console.log(val);
       //     //     console.log(result);
-      //     //     this.searchedImages = window.totalSelectedPaths - paths.length; // for showing the loading
+      //     //     this.searchedImages = this.selectedFilePaths - paths.length; // for showing the loading
       //     //     this.processImage(paths, imgSource);
       //     //   };
       //   } catch (err) {

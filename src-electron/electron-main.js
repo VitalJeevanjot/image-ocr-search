@@ -56,9 +56,24 @@ app.on("activate", () => {
 app.whenReady().then(() => {
   ipcMain.handle("select-file", handleFileSelect);
   ipcMain.handle("open-folder", handleFolderOpen);
-  ipcMain.handle("get-img", getImageDataUrl);
+  ipcMain.handle("get-img", getImageData);
+  ipcMain.handle("open-img", handleImageOpen);
+  ipcMain.handle("get-img-thumbnail", getThumbnail);
   createWindow();
 });
+
+async function getThumbnail(e, path) {
+  let result = await nativeImage.createThumbnailFromPath(path, {
+    width: 100,
+    height: 100,
+  });
+  return result.toDataURL();
+}
+
+async function handleImageOpen(e, path) {
+  let error = await shell.openPath(path);
+  if (error) console.log(error);
+}
 
 function isImage(fileName) {
   const extensions = ["jpg", "png"];
@@ -112,7 +127,7 @@ async function handleFolderOpen(event) {
   }
 }
 
-async function getImageDataUrl(event, path) {
+async function getImageData(event, path) {
   const contents = await readFile(path);
   // const base64Image = await Buffer.from(contents).toString("base64");
   // const dataUrl = `data:image/${isImage(path)};base64,${base64Image}`;
