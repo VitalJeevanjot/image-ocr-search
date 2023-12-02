@@ -25,7 +25,7 @@
         "
       >
         <q-card-section
-          >{{ value.split("__££__")[0] }}
+          >{{ value.name }}
           <q-btn
             dense
             round
@@ -36,7 +36,7 @@
           ></q-card-section
         >
         <p class="q-ml-md text-grey-5 text-caption">
-          {{ value.split("__££__")[1] }}
+          {{ value.date }}
         </p>
         <q-card-actions align="right">
           <q-btn
@@ -44,7 +44,16 @@
             style="border: black 2px solid"
             class="text-black bg-grey-3"
             round
+            @click="goToImageSearch(value)"
             icon="image_search"
+          />
+          <q-btn
+            flat
+            dense
+            style="border: black 2px solid"
+            class="text-white bg-red q-ml-md"
+            round
+            icon="remove"
           />
         </q-card-actions>
       </q-card>
@@ -93,15 +102,15 @@ export default {
     for (var i = 0; i < all_keys.length; i++) {
       if (all_keys[i].split("__££__")[1] == "image_ocr_search") {
         if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
-          this.stored_paths.push(
-            all_keys[i].split("__££__")[0] +
-              "__££__" +
-              LocalStorage.getItem(all_keys[i]).split("__££__")[2]
-          );
+          this.stored_paths.push({
+            name: all_keys[i].split("__££__")[0],
+            date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+          });
         } else {
-          this.stored_paths.push(
-            LocalStorage.getItem(all_keys[i]).split("__££__")[1]
-          );
+          this.stored_paths.push({
+            name: LocalStorage.getItem(all_keys[i]).split("__££__")[1],
+            date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+          });
         }
       }
     }

@@ -116,6 +116,7 @@ export default {
   mounted() {},
   methods: {
     goBack() {
+      this.start_indexing = false;
       this.$router.back();
     },
     async copyPickedPath(path) {
@@ -157,7 +158,7 @@ export default {
       this.progress_value = 0;
       var _uuid = crypto.randomUUID();
       var n_d = new Date();
-      // name, selected_folders_path, uuid
+      // uuid -> paths, name, date
       LocalStorage.set(
         _uuid.toString() + "__££__" + "image_ocr_search",
         this.selectedFoldersToSearchFrom +

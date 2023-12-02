@@ -8,7 +8,7 @@
         flat
         icon="folder_open"
         id="button_main"
-        @click="$router.push('/filesSearch')"
+        @click="$router.push('/filesIndexing')"
       />
     </div>
 

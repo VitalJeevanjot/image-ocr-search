@@ -4,7 +4,14 @@ const routes = [
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/IndexPage.vue") },
-      { path: "filesSearch", component: () => import("pages/filesSearch.vue") },
+      {
+        path: "filesIndexing",
+        component: () => import("pages/filesIndexing.vue"),
+      },
+      {
+        path: "filesSearch",
+        component: () => import("src/pages/SearchFromImages.vue"),
+      },
     ],
   },
 
