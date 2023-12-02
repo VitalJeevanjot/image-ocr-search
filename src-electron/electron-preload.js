@@ -49,4 +49,10 @@ contextBridge.exposeInMainWorld("imgSearchAPI", {
   processImg: async (img) => {
     return await ipcRenderer.invoke("process-img", img);
   },
+  openImageInDefault: async (img) => {
+    return await ipcRenderer.invoke("open-img", img);
+  },
+  getImageThumbnail: async (img) => {
+    return await ipcRenderer.invoke("get-img-thumbnail", img);
+  },
 });

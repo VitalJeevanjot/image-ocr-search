@@ -1,5 +1,15 @@
 <template>
   <q-page padding>
+    <q-page-sticky position="top-left" :offset="[18, 18]">
+      <q-btn
+        class="text-white self-center"
+        dense
+        flat
+        icon="arrow_back"
+        rounded
+        @click="$router.back()"
+      />
+    </q-page-sticky>
     <div class="row justify-center">
       <q-input
         v-model="search_text"
@@ -20,22 +30,12 @@
           class="q-mx-md q-my-md"
           v-for="(image, index) in imagesPaths"
           :key="index"
-          :data-id="index"
-          v-intersection="onIntersection"
         >
-          <div v-if="visible[index]">
-            <q-img
-              class="self-start"
-              :src="thumbnails[index]"
-              @click="openImage(image)"
-              style="height: 20vh; width: 20vw; border: 2px solid #efefef"
-            />
-          </div>
-
-          <div
-            v-else
+          <q-img
+            class="self-start"
+            :src="thumbnails[index]"
             @click="openImage(image)"
-            style="height: 20vh; width: 20vw; border: 1px solid #efefef"
+            style="height: 20vh; width: 20vw; border: 2px solid #efefef"
           />
           <p
             style="width: 20vw; overflow-wrap: break-word"
@@ -50,11 +50,14 @@
 </template>
 
 <script>
+import { LocalStorage } from "quasar";
 export default {
   name: "SearchFromImages",
   data() {
     return {
       search_text: "",
+      imagesPerPage: 30,
+      currentPage: 0,
       imagesPaths: [],
       imagesCount: 0,
       thumbnails: [],
@@ -62,9 +65,40 @@ export default {
   },
   methods: {
     openImage(path) {
-      window.electronAPI.openImageInDefault(path);
+      window.imgSearchAPI.openImageInDefault(path);
+    },
+    async incrementPage() {
+      this.currentPage++;
+      await this.getImagesData();
+    },
+    async decrementPage() {
+      this.currentPage--;
+      await this.getImagesData();
+    },
+    async getImagesData() {
+      this.imagesPaths = [];
+      this.thumbnails = [];
+      var current_uuid = LocalStorage.getItem(
+        "current_uuid__££__image_ocr_search"
+      );
+      var data = await window.indexedDb.pathsIndexed
+        .where("uuid")
+        .equals(current_uuid)
+        .offset(this.currentPage * this.imagesPerPage)
+        .limit(this.imagesPerPage)
+        .toArray();
+      console.log(data);
+      var length = data.length > 30 ? this.imagesPerPage : data.length;
+      for (var i = 0; i < length; i++) {
+        this.imagesPaths.push(data[i].img_path);
+        this.thumbnails.push(
+          await window.imgSearchAPI.getImageThumbnail(data[i].img_path)
+        );
+      }
     },
   },
-  mounted() {},
+  async mounted() {
+    await this.getImagesData();
+  },
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <!-- content -->
-    <div class="row justify-center">
+    <q-page-sticky position="top-left" :offset="[18, 18]">
       <q-btn
         class="text-white self-center"
         dense
@@ -15,7 +15,7 @@
         Image search
       </span>
       <q-space /> -->
-    </div>
+    </q-page-sticky>
     <div class="row justify-center" id="container">
       <q-btn
         icon="folder_open"

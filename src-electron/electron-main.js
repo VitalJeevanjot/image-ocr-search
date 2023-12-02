@@ -1,4 +1,11 @@
-import { app, BrowserWindow, dialog, nativeImage, ipcMain } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  nativeImage,
+  ipcMain,
+  shell,
+} from "electron";
 import { readdir, stat, readFile } from "node:fs/promises";
 import path from "path";
 import os from "os";
@@ -134,8 +141,8 @@ async function processImage(event, img) {
 
 async function getThumbnail(e, path) {
   let result = await nativeImage.createThumbnailFromPath(path, {
-    width: 100,
-    height: 100,
+    width: 300,
+    height: 300,
   });
   return result.toDataURL();
 }

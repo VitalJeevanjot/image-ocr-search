@@ -17,7 +17,6 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         /> -->
-
         <q-toolbar-title> Image OCR search </q-toolbar-title>
         <!-- <div>ocrs</div> -->
         <!-- <div>characters</div>
