@@ -71,8 +71,17 @@ app.whenReady().then(() => {
   ipcMain.handle("start-worker", handleStartWorker);
   ipcMain.handle("terminate-worker", handleTerminateWorker);
   ipcMain.handle("process-img", processImage);
+  ipcMain.handle("search-text-in-app", handleSearchTextInApp);
+  ipcMain.handle("stop-search-text-in-app", handleStopSearchTextInApp);
   createWindow();
 });
+
+function handleStopSearchTextInApp(event) {
+  return mainWindow.webContents.stopFindInPage("clearSelection");
+}
+function handleSearchTextInApp(event, text) {
+  return mainWindow.webContents.findInPage(text);
+}
 
 var worker1 = null;
 var worker2 = null;

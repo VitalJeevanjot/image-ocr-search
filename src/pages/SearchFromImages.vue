@@ -28,26 +28,97 @@
       <div class="row justify-center">
         <div
           class="q-mx-md q-my-md"
-          v-for="(image, index) in imagesPaths"
+          v-for="(path, index) in imagesPaths"
           :key="index"
         >
-          <q-img
-            class="self-start"
-            :src="thumbnails[index]"
-            @click="openImage(image)"
-            style="height: 20vh; width: 20vw; border: 2px solid #efefef"
-          />
+          <div class="container">
+            <q-img
+              class="self-start"
+              :src="thumbnails[index]"
+              @click="openImage(path)"
+              style="height: 20vh; width: 20vw; border: 2px solid #efefef"
+            />
+            <q-btn
+              class="text-white btn bg-grey-10"
+              dense
+              size="0.8rem"
+              flat
+              icon="info"
+              rounded
+              @click="openImageInfoDialog(index)"
+            />
+          </div>
           <p
             style="width: 20vw; overflow-wrap: break-word"
             class="text-white q-pt-sm"
           >
-            {{ image.split("\\").pop() }}
+            {{ path.split("\\").pop() }}
           </p>
         </div>
       </div>
     </div>
+
+    <q-dialog v-model="imageInfoDialog">
+      <q-card dark>
+        <q-card-section>
+          <div class="text-h6">Image text data.</div>
+        </q-card-section>
+        <q-separator dark />
+        <q-card-section class="q-pt-sm text-caption text-grey-6">
+          {{ imagesPaths[currentIndex] }}
+        </q-card-section>
+        <q-separator dark />
+        <q-card-section class="q-pt-md">
+          <div class="row">
+            <q-input
+              v-model="search_local_text"
+              @update:model-value="setTextStatus"
+              ref="local_search"
+              filled
+              color="grey-8"
+              dark
+              dense
+              style="min-width: 250px; width: 10vw"
+            ></q-input>
+            <q-btn
+              class="q-ml-sm text-white bg-grey-10 self-center"
+              dense
+              size="0.8rem"
+              flat
+              :icon="searchingLocalText ? 'close' : 'search'"
+              round
+              @click="highlightSearchedText"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="q-pt-xs">
+          {{ textData[currentIndex] }}
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="Close"
+            color="grey-5"
+            @click="closeImageInfoDialog"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
+
+<style scoped>
+.container {
+  position: relative;
+}
+.container .btn {
+  position: absolute;
+  top: 12%;
+  left: 94%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+</style>
 
 <script>
 import { LocalStorage } from "quasar";
@@ -56,16 +127,45 @@ export default {
   data() {
     return {
       search_text: "",
+      search_local_text: "",
       imagesPerPage: 30,
       currentPage: 0,
       imagesPaths: [],
       imagesCount: 0,
       thumbnails: [],
+      textData: [],
+      currentIndex: null,
+      imageInfoDialog: false,
+      searchingLocalText: false,
     };
   },
   methods: {
+    setTextStatus(newVal) {
+      if (!newVal) {
+        this.searchingLocalText = false;
+        window.imgSearchAPI.stopSearchTextInApp();
+      }
+    },
     openImage(path) {
       window.imgSearchAPI.openImageInDefault(path);
+    },
+    openImageInfoDialog(index) {
+      this.currentIndex = index;
+      this.imageInfoDialog = true;
+    },
+    closeImageInfoDialog() {
+      this.imageInfoDialog = false;
+      this.searchingLocalText = false;
+      window.imgSearchAPI.stopSearchTextInApp();
+    },
+    async highlightSearchedText() {
+      if (!this.search_local_text || this.searchingLocalText == true) {
+        window.imgSearchAPI.stopSearchTextInApp();
+        this.searchingLocalText = false;
+        return;
+      }
+      window.imgSearchAPI.searchTextInApp(this.search_local_text);
+      this.searchingLocalText = true;
     },
     async incrementPage() {
       this.currentPage++;
@@ -94,6 +194,7 @@ export default {
         this.thumbnails.push(
           await window.imgSearchAPI.getImageThumbnail(data[i].img_path)
         );
+        this.textData.push(data[i].text_data);
       }
     },
   },

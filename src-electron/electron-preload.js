@@ -55,4 +55,10 @@ contextBridge.exposeInMainWorld("imgSearchAPI", {
   getImageThumbnail: async (img) => {
     return await ipcRenderer.invoke("get-img-thumbnail", img);
   },
+  searchTextInApp: async (text) => {
+    return await ipcRenderer.invoke("search-text-in-app", text);
+  },
+  stopSearchTextInApp: async () => {
+    return await ipcRenderer.invoke("stop-search-text-in-app");
+  },
 });
