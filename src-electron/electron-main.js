@@ -97,7 +97,7 @@ async function handleStartWorker() {
   await scheduler.addWorker(worker4);
 }
 async function handleTerminateWorker() {
-  await worker.terminate();
+  await scheduler.terminate();
 }
 async function processImage(event, img) {
   const result = await scheduler.addJob("recognize", img);
