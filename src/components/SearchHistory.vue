@@ -95,6 +95,12 @@ export default {
       stored_paths: [],
     };
   },
+  methods: {
+    goToImageSearch(value) {
+      LocalStorage.set("current_uuid__££__image_ocr_search", value.uuid);
+      this.$router.push("/filesSearch");
+    },
+  },
   mounted() {
     var all_stored_paths = LocalStorage.getAll();
     var all_keys = Object.keys(all_stored_paths);
@@ -105,11 +111,13 @@ export default {
           this.stored_paths.push({
             name: all_keys[i].split("__££__")[0],
             date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+            uuid: all_keys[i].split("__££__")[0],
           });
         } else {
           this.stored_paths.push({
             name: LocalStorage.getItem(all_keys[i]).split("__££__")[1],
             date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+            uuid: all_keys[i].split("__££__")[0],
           });
         }
       }
