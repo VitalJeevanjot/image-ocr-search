@@ -71,6 +71,10 @@ var worker1 = null;
 var worker2 = null;
 var worker3 = null;
 var worker4 = null;
+var worker5 = null;
+var worker6 = null;
+var worker7 = null;
+var worker8 = null;
 var scheduler = null;
 async function handleStartWorker() {
   worker1 = await Tesseract.createWorker("eng", 1, {
@@ -89,12 +93,32 @@ async function handleStartWorker() {
     langPath: path.resolve("./public/languageData"),
   });
 
+  worker5 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker6 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker7 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker8 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
   scheduler = await Tesseract.createScheduler();
 
   await scheduler.addWorker(worker1);
   await scheduler.addWorker(worker2);
   await scheduler.addWorker(worker3);
   await scheduler.addWorker(worker4);
+  await scheduler.addWorker(worker5);
+  await scheduler.addWorker(worker6);
+  await scheduler.addWorker(worker7);
+  await scheduler.addWorker(worker8);
 }
 async function handleTerminateWorker() {
   await scheduler.terminate();
