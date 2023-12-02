@@ -40,4 +40,13 @@ contextBridge.exposeInMainWorld("imgSearchAPI", {
   getImage: async (path) => {
     return await ipcRenderer.invoke("get-img", path);
   },
+  startWorker: async () => {
+    return await ipcRenderer.invoke("start-worker");
+  },
+  terminateWorker: async () => {
+    return await ipcRenderer.invoke("terminate-worker");
+  },
+  processImg: async (img) => {
+    return await ipcRenderer.invoke("process-img", img);
+  },
 });

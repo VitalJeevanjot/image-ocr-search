@@ -104,7 +104,6 @@ export default {
   name: "FilesSearch",
   data() {
     return {
-      selectedImageToSearch: "",
       selectedFoldersToSearchFrom: null,
       selectedFilePaths: null,
       searchedImages: 0,
@@ -147,6 +146,7 @@ export default {
       this.selectedFilePaths = filesPaths;
       if (filesPaths) {
         this.start_indexing = true;
+        await window.imgSearchAPI.startWorker();
         this.startIndexing();
       }
       // this.searchImages(filesPaths);
@@ -178,15 +178,14 @@ export default {
         if (this.start_indexing == false) {
           break;
         }
-        this.selectedImageToSearch = this.selectedFilePaths[i];
-
-        let imgDataUrlSource = await window.imgSearchAPI.getImage(
-          this.selectedImageToSearch
-        );
 
         // const {
         //   data: { text },
         // } = await worker.recognize(imgDataUrlSource);
+        const text = await window.imgSearchAPI.processImg(
+          this.selectedFilePaths[i]
+        );
+        console.log(text);
 
         this.progress_value = parseInt(
           ((i + 1) / this.selectedFilePaths.length) * 100
@@ -199,10 +198,9 @@ export default {
           img_path: this.selectedFilePaths[i],
           text_data: text,
         });
-        if (i == this.selectedFilePaths.length - 1) {
-          this.start_indexing = false;
-        }
       }
+      this.start_indexing = false;
+      await window.imgSearchAPI.terminateWorker();
       // terminate worker
       // await worker.terminate();
     },

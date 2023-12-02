@@ -61,8 +61,52 @@ app.whenReady().then(() => {
   ipcMain.handle("get-img", getImageData);
   ipcMain.handle("open-img", handleImageOpen);
   ipcMain.handle("get-img-thumbnail", getThumbnail);
+  ipcMain.handle("start-worker", handleStartWorker);
+  ipcMain.handle("terminate-worker", handleTerminateWorker);
+  ipcMain.handle("process-img", processImage);
   createWindow();
 });
+
+var worker1 = null;
+var worker2 = null;
+var worker3 = null;
+var worker4 = null;
+var scheduler = null;
+async function handleStartWorker() {
+  worker1 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker2 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker3 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  worker4 = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+
+  scheduler = await Tesseract.createScheduler();
+
+  await scheduler.addWorker(worker1);
+  await scheduler.addWorker(worker2);
+  await scheduler.addWorker(worker3);
+  await scheduler.addWorker(worker4);
+}
+async function handleTerminateWorker() {
+  await worker.terminate();
+}
+async function processImage(event, img) {
+  const result = await scheduler.addJob("recognize", img);
+  console.log(result.data.text);
+  // const {
+  //   data: { text },
+  // } = await worker.recognize(img);
+  return result.data.text;
+}
 
 async function getThumbnail(e, path) {
   let result = await nativeImage.createThumbnailFromPath(path, {
@@ -101,10 +145,6 @@ async function handleFolderOpen(event) {
   if (!canceled) {
     let dirContent = [];
     let filesPaths = [];
-    console.log(path.resolve("./public/languageData"));
-    const worker = await Tesseract.createWorker("eng", 1, {
-      langPath: path.resolve("./public/languageData"),
-    });
 
     try {
       for (let i = 0; i < folderPaths?.length; i++) {
@@ -122,18 +162,8 @@ async function handleFolderOpen(event) {
               console.log(err);
             }
           }
-          const {
-            data: { text },
-          } = await worker.recognize(`${folderPaths[i]}\\${dirContent[k]}`);
-          console.log(text);
-          console.log(
-            "------------------------------- " +
-              k +
-              "-------------------------------"
-          );
         }
       }
-      await worker.terminate();
     } catch (err) {
       console.log("err1");
       console.log(err);
