@@ -124,13 +124,13 @@ async function handleTerminateWorker() {
   if (schedulers) {
     for (var i = 0; i < workers.length; i++) {
       await schedulers[i].terminate();
-      console.log("£££Terminated");
+      // console.log("£££Terminated");
     }
     schedulers = [];
   }
   if (workers) {
     for (var i = 0; i < workers.length; i++) {
-      console.log("Terminating " + i);
+      // console.log("Terminating " + i);
       await workers[i].terminate();
     }
     workers = [];
@@ -145,7 +145,7 @@ async function processImage(event, img) {
   let _result = [];
   for (var i = 0; i < _schedulers; i++) {
     _result.push(schedulers[i].addJob("recognize", img[i]));
-    console.log("pushed job in scheduler-> " + i);
+    // console.log("pushed job in scheduler-> " + i);
     // console.log(_result);
   }
   result = (await Promise.all(_result)).map((a) => a.data.text);
