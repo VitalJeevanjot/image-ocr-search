@@ -25,28 +25,40 @@
       </q-btn>
     </div>
 
-    <q-page-sticky position="top-right" :offset="[18, 18]">
-      <span class="text-white q-mr-md"
-        >{{ currentPage + 1 }}
-        <span v-if="totalResults > imagesPerPage">({{ imagesPerPage }})</span> /
-        {{ totalPages }} ({{ totalResults }})</span
+    <q-page-sticky
+      position="top-right"
+      :offset="[18, 18]"
+      style="z-index: 10000"
+    >
+      <div
+        style="
+          background-color: rgb(42, 42, 42);
+          padding: 5px;
+          border-radius: 2px;
+        "
       >
-      <q-btn
-        class="text-white self-center bg-grey-10"
-        dense
-        icon="arrow_back"
-        squared
-        :disable="currentPage + 1 <= 1 ? true : false"
-        @click="decrementPage"
-      />
-      <q-btn
-        class="text-white self-center bg-grey-10"
-        dense
-        icon="arrow_forward"
-        squared
-        :disable="currentPage + 1 >= totalPages ? true : false"
-        @click="incrementPage"
-      />
+        <span class="text-white q-mr-md"
+          >{{ currentPage + 1 }}
+          <span v-if="totalResults > imagesPerPage">({{ imagesPerPage }})</span>
+          / {{ totalPages }} ({{ totalResults }})</span
+        >
+        <q-btn
+          class="text-white self-center bg-grey-10"
+          dense
+          icon="arrow_back"
+          squared
+          :disable="currentPage + 1 <= 1 ? true : false"
+          @click="decrementPage"
+        />
+        <q-btn
+          class="text-white self-center bg-grey-10"
+          dense
+          icon="arrow_forward"
+          squared
+          :disable="currentPage + 1 >= totalPages ? true : false"
+          @click="incrementPage"
+        />
+      </div>
     </q-page-sticky>
 
     <div>

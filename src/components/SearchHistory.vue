@@ -12,11 +12,7 @@
     <p class="text-subtitle1 q-ma-sm text-white">
       Indexed paths ({{ stored_paths.length }}):
     </p>
-    <div
-      class="row justify-center"
-      v-for="value in stored_paths.slice().reverse()"
-      :key="value"
-    >
+    <div class="row justify-center" v-for="value in stored_paths" :key="value">
       <q-card
         class="q-ma-sm"
         style="
@@ -137,7 +133,7 @@
 }
 </style>
 <script>
-import { LocalStorage } from "quasar";
+import { LocalStorage, Notify } from "quasar";
 export default {
   // name: 'ComponentName',
   data() {
@@ -161,33 +157,51 @@ export default {
     closeAskForDeletionDialog() {
       this.askForDeletionDialog = false;
     },
-    deleteUUID() {
+    async deleteUUID() {
+      try {
+        await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(this.uuidToDelete)
+          .delete();
+        LocalStorage.remove(`${this.uuidToDelete}__££__image_ocr_search1`);
+      } catch (err) {
+        Notify.create({ message: "Error while deleting: " + err + " ❌" });
+      }
+      this.fetchData();
       this.askForDeletionDialog = false;
+    },
+    async fetchData() {
+      var all_stored_paths = LocalStorage.getAll();
+      var all_keys = Object.keys(all_stored_paths);
+
+      this.stored_paths = [];
+      // console.log(all_keys);
+      for (var i = 0; i < all_keys.length; i++) {
+        if (all_keys[i].split("__££__")[1] == "image_ocr_search1") {
+          if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
+            this.stored_paths.push({
+              paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
+              name: all_keys[i].split("__££__")[0],
+              date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+              uuid: all_keys[i].split("__££__")[0],
+            });
+          } else {
+            this.stored_paths.push({
+              paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
+              name: LocalStorage.getItem(all_keys[i]).split("__££__")[1],
+              date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
+              uuid: all_keys[i].split("__££__")[0],
+            });
+          }
+        }
+      }
+      this.stored_paths = this.stored_paths.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+      });
     },
   },
   mounted() {
-    var all_stored_paths = LocalStorage.getAll();
-    var all_keys = Object.keys(all_stored_paths);
-    // console.log(all_keys);
-    for (var i = 0; i < all_keys.length; i++) {
-      if (all_keys[i].split("__££__")[1] == "image_ocr_search1") {
-        if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
-          this.stored_paths.push({
-            paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
-            name: all_keys[i].split("__££__")[0],
-            date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
-            uuid: all_keys[i].split("__££__")[0],
-          });
-        } else {
-          this.stored_paths.push({
-            paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
-            name: LocalStorage.getItem(all_keys[i]).split("__££__")[1],
-            date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
-            uuid: all_keys[i].split("__££__")[0],
-          });
-        }
-      }
-    }
+    this.fetchData();
   },
 };
 </script>
