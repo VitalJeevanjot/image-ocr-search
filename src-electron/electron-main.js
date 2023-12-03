@@ -159,7 +159,7 @@ async function processImage(event, img) {
 }
 
 async function getThumbnail(e, path) {
-  console.log(path);
+  // console.log(path);
   let result = await nativeImage.createThumbnailFromPath(path, {
     width: 300,
     height: 300,
