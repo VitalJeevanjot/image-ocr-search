@@ -139,7 +139,7 @@
           ></q-input>
           <q-btn
             icon="edit"
-            class="q-ml-sm bg-grey-9 text-white"
+            class="q-ml-sm bg-grey-8 text-white"
             round
             @click="renameIndexedData"
           >
