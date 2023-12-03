@@ -30,6 +30,7 @@
             dense
             round
             icon="edit"
+            @click="openRenameDialog(value)"
             class="bg-grey-10 q-ml-sm"
             size="0.5rem"
             ><q-tooltip>Edit name</q-tooltip></q-btn
@@ -105,6 +106,49 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+
+  <q-dialog v-model="renameIndexedDataDialog" persistent>
+    <q-card dark>
+      <q-card-section>
+        <div class="row">
+          <div class="text-subtitle1">{{ nameSelectedForRename }}</div>
+          <q-space />
+          <q-btn
+            flat
+            round
+            dense
+            class="q-ml-sm"
+            icon="close"
+            color="grey-5 bg-grey-10"
+            @click="renameIndexedDataDialog = false"
+          />
+        </div>
+        <div class="row">
+          <div class="text-caption">Rename: {{ uuidSelectedForRename }}</div>
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="row">
+          <q-input
+            v-model="add_a_name_text"
+            filled
+            color="grey-8"
+            dark
+            dense
+          ></q-input>
+          <q-btn
+            icon="edit"
+            class="q-ml-sm bg-grey-9 text-white"
+            round
+            @click="renameIndexedData"
+          >
+            <q-tooltip>Rename</q-tooltip>
+          </q-btn>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <style scoped>
@@ -142,9 +186,40 @@ export default {
       askForDeletionDialog: false,
       uuidToDelete: null,
       pathsToDelete: null,
+      renameIndexedDataDialog: false,
+      uuidSelectedForRename: null,
+      nameSelectedForRename: null,
+      add_a_name_text: null,
     };
   },
   methods: {
+    openRenameDialog(val) {
+      this.uuidSelectedForRename = val.uuid;
+      this.nameSelectedForRename = val.name;
+      this.renameIndexedDataDialog = true;
+    },
+    renameIndexedData() {
+      var current_vals = LocalStorage.getItem(
+        this.uuidSelectedForRename + "__££__" + "image_ocr_search1"
+      );
+      if (this.add_a_name_text) {
+        current_vals =
+          current_vals.split("__££__")[0] +
+          "__££__" +
+          this.add_a_name_text +
+          "__££__" +
+          current_vals.split("__££__")[2];
+      }
+      LocalStorage.set(
+        this.uuidSelectedForRename + "__££__" + "image_ocr_search1",
+        current_vals
+      );
+      this.fetchData();
+      this.renameIndexedDataDialog = false;
+      this.uuidSelectedForRename = "";
+      this.nameSelectedForRename = "";
+      this.add_a_name_text = "";
+    },
     goToImageSearch(value) {
       LocalStorage.set("current_uuid__££__image_ocr_search2", value.uuid);
       this.$router.push("/filesSearch");
