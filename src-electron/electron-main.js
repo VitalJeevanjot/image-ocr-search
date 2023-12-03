@@ -86,18 +86,20 @@ function handleSearchTextInApp(event, text) {
 }
 
 var workers = [];
-var scheduler = null;
-var currentWorkers = 8;
+var schedulers = [];
+var totalSchedulers = 4;
+var currentSchedulers = 0;
 async function handleStartWorker() {
   workers = [];
-  scheduler = await Tesseract.createScheduler();
-  for (let i = 0; i < currentWorkers; i++) {
+  for (let i = 0; i < totalSchedulers; i++) {
+    schedulers.push(await Tesseract.createScheduler());
     workers.push(
       await Tesseract.createWorker("eng", 1, {
         langPath: path.resolve("./public/languageData"),
       })
     );
-    await scheduler.addWorker(workers[i]);
+    currentSchedulers++;
+    await schedulers[i].addWorker(workers[i]);
   }
 }
 
@@ -106,22 +108,25 @@ async function handleIncreasingWorkers() {
     langPath: path.resolve("./public/languageData"),
   });
   workers.push(worker);
-  await scheduler.addWorker(worker);
-  currentWorkers++;
-  return await scheduler.getNumWorkers();
+  schedulers.push(await Tesseract.createScheduler());
+  await schedulers[schedulers.length - 1].addWorker(worker);
+  currentSchedulers++;
+  return currentSchedulers;
 }
 async function handleGettingTotalNumberOfWorkers() {
-  if (scheduler) {
-    return await scheduler.getNumWorkers();
+  if (schedulers) {
+    return currentSchedulers;
   }
 }
 
 async function handleTerminateWorker() {
-  console.log(scheduler);
-  if (scheduler) {
-    await scheduler.terminate();
-    console.log("£££Terminated");
-    scheduler = null;
+  // console.log(schedulers);
+  if (schedulers) {
+    for (var i = 0; i < workers.length; i++) {
+      await schedulers[i].terminate();
+      console.log("£££Terminated");
+    }
+    schedulers = [];
   }
   if (workers) {
     for (var i = 0; i < workers.length; i++) {
@@ -130,18 +135,31 @@ async function handleTerminateWorker() {
     }
     workers = [];
   }
-  currentWorkers = 8;
+  currentSchedulers = 0;
 }
 async function processImage(event, img) {
-  const result = await scheduler.addJob("recognize", img);
+  var result = [];
+  // console.log(schedulers);
+  let _schedulers = currentSchedulers;
+
+  let _result = [];
+  for (var i = 0; i < _schedulers; i++) {
+    _result.push(schedulers[i].addJob("recognize", img[i]));
+    console.log("pushed job in scheduler-> " + i);
+    console.log(_result);
+  }
+  result = (await Promise.all(_result)).map((a) => a.data.text);
+  // console.log(result);
+  // return result;
   // console.log(result.data.text);
   // const {
   //   data: { text },
   // } = await worker.recognize(img);
-  return result.data.text;
+  return result;
 }
 
 async function getThumbnail(e, path) {
+  console.log(path);
   let result = await nativeImage.createThumbnailFromPath(path, {
     width: 300,
     height: 300,

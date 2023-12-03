@@ -208,27 +208,38 @@ export default {
         if (this.start_indexing == false) {
           break;
         }
-
+        // console.log("------------------");
+        // console.log(i);
+        // console.log("------------------");
         // const {
         //   data: { text },
         // } = await worker.recognize(imgDataUrlSource);
-        const text = await window.imgSearchAPI.processImg(
-          this.selectedFilePaths[i]
-        );
+        var text = [];
+        var paths = [];
+        var leftover = this.selectedFilePaths.length - i;
+        var current_workers =
+          leftover > this.currentWorkers ? this.currentWorkers : leftover;
+        for (var j = 0; j < current_workers; j++) {
+          paths.push(this.selectedFilePaths[i + j]);
+        }
+        i = i + (current_workers - 1);
+        text = await window.imgSearchAPI.processImg(paths);
         // console.log(text);
-
-        this.progress_value = parseInt(
-          ((i + 1) / this.selectedFilePaths.length) * 100
-        );
-        this.processed_files = i + 1;
-        var d = new Date();
-        await window.indexedDb.pathsIndexed.add({
-          uuid: _uuid,
-          processed_date: d.toLocaleString(),
-          img_path: this.selectedFilePaths[i],
-          text_data: text,
-        });
-        console.log(text);
+        for (var k = 0; k < current_workers; k++) {
+          this.progress_value = parseInt(
+            ((i + 1) / this.selectedFilePaths.length) * 100
+          );
+          var d = new Date();
+          await window.indexedDb.pathsIndexed.add({
+            uuid: _uuid,
+            processed_date: d.toLocaleString(),
+            img_path: paths[k],
+            text_data: text[k],
+          });
+          this.processed_files = i + 1;
+          // console.log(text[k]);
+        }
+        // console.log(text);
       }
       if (this.start_indexing == true) {
         this.start_indexing = false;

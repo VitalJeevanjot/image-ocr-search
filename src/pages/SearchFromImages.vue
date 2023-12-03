@@ -39,7 +39,9 @@
       >
         <span class="text-white q-mr-md"
           >{{ currentPage + 1 }}
-          <span v-if="totalResults > imagesPerPage">({{ imagesPerPage }})</span>
+          <span v-if="totalResults > imagesPerPage"
+            >({{ showingImagesInPage }})</span
+          >
           / {{ totalPages }} ({{ totalResults }})</span
         >
         <q-btn
@@ -166,7 +168,8 @@ export default {
     return {
       search_text: "",
       search_local_text: "",
-      imagesPerPage: 30,
+      imagesPerPage: 24,
+      showingImagesInPage: 0,
       totalResults: 0,
       currentPage: 0,
       totalPages: 0,
@@ -242,10 +245,8 @@ export default {
         .count();
       this.totalPages =
         parseInt(this.totalResults / this.imagesPerPage) +
-        (this.totalResults % this.imagesPerPage > 0)
-          ? 1
-          : 0;
-      // console.log(this.totalPages);
+        (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
+      this.showingImagesInPage = length;
     },
   },
   async mounted() {
