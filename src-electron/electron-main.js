@@ -146,7 +146,7 @@ async function processImage(event, img) {
   for (var i = 0; i < _schedulers; i++) {
     _result.push(schedulers[i].addJob("recognize", img[i]));
     console.log("pushed job in scheduler-> " + i);
-    console.log(_result);
+    // console.log(_result);
   }
   result = (await Promise.all(_result)).map((a) => a.data.text);
   // console.log(result);
