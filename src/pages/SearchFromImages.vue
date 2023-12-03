@@ -27,7 +27,9 @@
 
     <q-page-sticky position="top-right" :offset="[18, 18]">
       <span class="text-white q-mr-md"
-        >{{ currentPage + 1 }} / {{ totalPages }}</span
+        >{{ currentPage + 1 }}
+        <span v-if="totalResults > imagesPerPage">({{ imagesPerPage }})</span> /
+        {{ totalPages }} ({{ totalResults }})</span
       >
       <q-btn
         class="text-white self-center bg-grey-10"
@@ -82,7 +84,7 @@
     </div>
 
     <q-dialog v-model="imageInfoDialog">
-      <q-card dark>
+      <q-card dark style="min-width: 250px; width: 50vw">
         <q-card-section>
           <div class="row">
             <div class="text-subtitle1">Image text data.</div>
@@ -153,6 +155,7 @@ export default {
       search_text: "",
       search_local_text: "",
       imagesPerPage: 30,
+      totalResults: 0,
       currentPage: 0,
       totalPages: 0,
       imagesPaths: [],
@@ -204,7 +207,7 @@ export default {
       this.imagesPaths = [];
       this.thumbnails = [];
       var current_uuid = LocalStorage.getItem(
-        "current_uuid__££__image_ocr_search"
+        "current_uuid__££__image_ocr_search2"
       );
       var data = await window.indexedDb.pathsIndexed
         .where("uuid")
@@ -212,7 +215,7 @@ export default {
         .offset(this.currentPage * this.imagesPerPage)
         .limit(this.imagesPerPage)
         .toArray();
-      console.log(data);
+      // console.log(data);
       var length = data.length > 30 ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
         this.imagesPaths.push(data[i].img_path);
@@ -221,16 +224,16 @@ export default {
         );
         this.textData.push(data[i].text_data);
       }
-      const totalResults = await window.indexedDb.pathsIndexed
+      this.totalResults = await window.indexedDb.pathsIndexed
         .where("uuid")
         .equals(current_uuid)
         .count();
       this.totalPages =
-        parseInt(totalResults / this.imagesPerPage) +
-        (totalResults % this.imagesPerPage > 0)
+        parseInt(this.totalResults / this.imagesPerPage) +
+        (this.totalResults % this.imagesPerPage > 0)
           ? 1
           : 0;
-      console.log(this.totalPages);
+      // console.log(this.totalPages);
     },
   },
   async mounted() {

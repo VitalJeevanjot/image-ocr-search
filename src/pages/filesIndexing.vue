@@ -141,8 +141,8 @@ export default {
     async selectFolderToSearchFromAndSearch() {
       const { filesPaths, folderPaths } =
         await window.imgSearchAPI.openFolder();
-      console.log(filesPaths);
-      console.log(folderPaths);
+      // console.log(filesPaths);
+      // console.log(folderPaths);
       this.selectedFoldersToSearchFrom = folderPaths;
       this.selectedFilePaths = filesPaths;
       if (filesPaths) {
@@ -160,7 +160,7 @@ export default {
       var n_d = new Date();
       // uuid -> paths, name, date
       LocalStorage.set(
-        _uuid.toString() + "__££__" + "image_ocr_search",
+        _uuid.toString() + "__££__" + "image_ocr_search1",
         this.selectedFoldersToSearchFrom +
           "__££__" +
           " " +
@@ -186,7 +186,7 @@ export default {
         const text = await window.imgSearchAPI.processImg(
           this.selectedFilePaths[i]
         );
-        console.log(text);
+        // console.log(text);
 
         this.progress_value = parseInt(
           ((i + 1) / this.selectedFilePaths.length) * 100

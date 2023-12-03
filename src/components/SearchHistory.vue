@@ -12,7 +12,11 @@
     <p class="text-subtitle1 q-ma-sm text-white">
       Indexed paths ({{ stored_paths.length }}):
     </p>
-    <div class="row justify-center" v-for="value in stored_paths" :key="value">
+    <div
+      class="row justify-center"
+      v-for="value in stored_paths.slice().reverse()"
+      :key="value"
+    >
       <q-card
         class="q-ma-sm"
         style="
@@ -54,11 +58,54 @@
             class="text-white bg-red q-ml-md"
             round
             icon="remove"
+            @click="askToRemoveIndexedData(value)"
           />
         </q-card-actions>
       </q-card>
     </div>
   </div>
+
+  <q-dialog v-model="askForDeletionDialog">
+    <q-card dark style="min-width: 250px; width: 50vw">
+      <q-card-section>
+        <div class="row">
+          <div class="text-subtitle1">Delete indexed data.</div>
+          <q-space />
+          <q-btn
+            flat
+            round
+            dense
+            icon="close"
+            color="grey-5 bg-grey-10"
+            @click="closeAskForDeletionDialog"
+          />
+        </div>
+      </q-card-section>
+      <q-separator dark />
+      <q-card-section class="q-pt-sm text-caption text-white">
+        {{ uuidToDelete }}
+      </q-card-section>
+      <q-separator dark />
+      <q-card-section class="q-pt-sm text-caption text-white">
+        {{ pathsToDelete }}
+      </q-card-section>
+      <q-separator dark />
+      <q-card-section>
+        <div class="row">
+          <q-space />
+          <q-btn
+            class="q-ml-sm text-white bg-red self-center"
+            dense
+            size="0.8rem"
+            flat
+            icon="delete"
+            round
+            @click="deleteUUID"
+          />
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <style scoped>
@@ -93,12 +140,26 @@ export default {
   data() {
     return {
       stored_paths: [],
+      askForDeletionDialog: false,
+      uuidToDelete: null,
+      pathsToDelete: null,
     };
   },
   methods: {
     goToImageSearch(value) {
-      LocalStorage.set("current_uuid__££__image_ocr_search", value.uuid);
+      LocalStorage.set("current_uuid__££__image_ocr_search2", value.uuid);
       this.$router.push("/filesSearch");
+    },
+    askToRemoveIndexedData(val) {
+      this.uuidToDelete = val.uuid;
+      this.pathsToDelete = val.paths;
+      this.askForDeletionDialog = true;
+    },
+    closeAskForDeletionDialog() {
+      this.askForDeletionDialog = false;
+    },
+    deleteUUID() {
+      this.askForDeletionDialog = false;
     },
   },
   mounted() {
@@ -106,15 +167,17 @@ export default {
     var all_keys = Object.keys(all_stored_paths);
     // console.log(all_keys);
     for (var i = 0; i < all_keys.length; i++) {
-      if (all_keys[i].split("__££__")[1] == "image_ocr_search") {
+      if (all_keys[i].split("__££__")[1] == "image_ocr_search1") {
         if (LocalStorage.getItem(all_keys[i]).split("__££__")[1] == " ") {
           this.stored_paths.push({
+            paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
             name: all_keys[i].split("__££__")[0],
             date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
             uuid: all_keys[i].split("__££__")[0],
           });
         } else {
           this.stored_paths.push({
+            paths: LocalStorage.getItem(all_keys[i]).split("__££__")[0],
             name: LocalStorage.getItem(all_keys[i]).split("__££__")[1],
             date: LocalStorage.getItem(all_keys[i]).split("__££__")[2],
             uuid: all_keys[i].split("__££__")[0],

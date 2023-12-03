@@ -141,7 +141,7 @@ async function handleTerminateWorker() {
 }
 async function processImage(event, img) {
   const result = await scheduler.addJob("recognize", img);
-  console.log(result.data.text);
+  // console.log(result.data.text);
   // const {
   //   data: { text },
   // } = await worker.recognize(img);
