@@ -10,6 +10,7 @@
         @click="$router.back()"
       />
     </q-page-sticky>
+
     <div class="row justify-center">
       <q-input
         v-model="search_text"
@@ -24,8 +25,30 @@
       </q-btn>
     </div>
 
+    <q-page-sticky position="top-right" :offset="[18, 18]">
+      <span class="text-white q-mr-md"
+        >{{ currentPage + 1 }} / {{ totalPages }}</span
+      >
+      <q-btn
+        class="text-white self-center bg-grey-10"
+        dense
+        icon="arrow_back"
+        squared
+        :disable="currentPage + 1 <= 1 ? true : false"
+        @click="decrementPage"
+      />
+      <q-btn
+        class="text-white self-center bg-grey-10"
+        dense
+        icon="arrow_forward"
+        squared
+        :disable="currentPage + 1 >= totalPages ? true : false"
+        @click="incrementPage"
+      />
+    </q-page-sticky>
+
     <div>
-      <div class="row justify-center">
+      <div class="row justify-center q-mt-lg">
         <div
           class="q-mx-md q-my-md"
           v-for="(path, index) in imagesPaths"
@@ -131,6 +154,7 @@ export default {
       search_local_text: "",
       imagesPerPage: 30,
       currentPage: 0,
+      totalPages: 0,
       imagesPaths: [],
       imagesCount: 0,
       thumbnails: [],
@@ -197,6 +221,16 @@ export default {
         );
         this.textData.push(data[i].text_data);
       }
+      const totalResults = await window.indexedDb.pathsIndexed
+        .where("uuid")
+        .equals(current_uuid)
+        .count();
+      this.totalPages =
+        parseInt(totalResults / this.imagesPerPage) +
+        (totalResults % this.imagesPerPage > 0)
+          ? 1
+          : 0;
+      console.log(this.totalPages);
     },
   },
   async mounted() {
