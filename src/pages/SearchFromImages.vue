@@ -116,8 +116,6 @@
 }
 .container .btn {
   position: absolute;
-  top: 12%;
-  left: 94%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
 }
