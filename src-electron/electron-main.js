@@ -73,6 +73,8 @@ app.whenReady().then(() => {
   ipcMain.handle("process-img", processImage);
   ipcMain.handle("search-text-in-app", handleSearchTextInApp);
   ipcMain.handle("stop-search-text-in-app", handleStopSearchTextInApp);
+  ipcMain.handle("increase-workers", handleIncreasingWorkers);
+  ipcMain.handle("get-number-of-workers", handleGettingTotalNumberOfWorkers);
   createWindow();
 });
 
@@ -87,6 +89,7 @@ var workers = [];
 var scheduler = null;
 var currentWorkers = 8;
 async function handleStartWorker() {
+  workers = [];
   scheduler = await Tesseract.createScheduler();
   for (let i = 0; i < currentWorkers; i++) {
     workers.push(
@@ -97,8 +100,37 @@ async function handleStartWorker() {
     await scheduler.addWorker(workers[i]);
   }
 }
+
+async function handleIncreasingWorkers() {
+  let worker = await Tesseract.createWorker("eng", 1, {
+    langPath: path.resolve("./public/languageData"),
+  });
+  workers.push(worker);
+  await scheduler.addWorker(worker);
+  currentWorkers++;
+  return await scheduler.getNumWorkers();
+}
+async function handleGettingTotalNumberOfWorkers() {
+  if (scheduler) {
+    return await scheduler.getNumWorkers();
+  }
+}
+
 async function handleTerminateWorker() {
-  await scheduler.terminate();
+  console.log(scheduler);
+  if (scheduler) {
+    await scheduler.terminate();
+    console.log("£££Terminated");
+    scheduler = null;
+  }
+  if (workers) {
+    for (var i = 0; i < workers.length; i++) {
+      console.log("Terminating " + i);
+      await workers[i].terminate();
+    }
+    workers = [];
+  }
+  currentWorkers = 8;
 }
 async function processImage(event, img) {
   const result = await scheduler.addJob("recognize", img);

@@ -8,7 +8,7 @@
         flat
         icon="arrow_back"
         rounded
-        @click="goBack"
+        @click="stopAndGoBack"
       />
       <q-space />
       <!-- <span class="self-center text-white text-title q-mr-lg">
@@ -18,6 +18,7 @@
     </q-page-sticky>
     <div class="row justify-center" id="container">
       <q-btn
+        v-if="!start_indexing"
         icon="folder_open"
         id="button_main"
         round
@@ -60,7 +61,7 @@
         size="0.5rem"
         icon="close"
         class="bg-red-9 text-white"
-        @click="start_indexing = false"
+        @click="stopAndGoBack"
         ><q-tooltip>Stop processing</q-tooltip></q-btn
       >
     </div>
@@ -87,6 +88,21 @@
       </p>
     </div>
     <div
+      class="row justify-center q-mt-sm items-center"
+      v-if="currentWorkers > 0"
+    >
+      <span class="text-caption text-grey-1"
+        >Workers: {{ currentWorkers }}</span
+      >
+      <q-btn
+        class="text-white bg-grey-10 q-ml-sm"
+        dense
+        icon="add"
+        squared
+        @click="increaseWorker"
+      />
+    </div>
+    <div
       class="row justify-center q-mt-sm"
       id="container"
       v-for="path in selectedFoldersToSearchFrom"
@@ -111,13 +127,25 @@ export default {
       processed_files: 0,
       total_selected_files: 0,
       start_indexing: false,
+      currentWorkers: 0,
     };
   },
-  mounted() {},
+  async mounted() {
+    await window.imgSearchAPI.terminateWorker();
+    await this.getNumberOfWorkers();
+  },
   methods: {
-    goBack() {
+    async stopAndGoBack() {
       this.start_indexing = false;
+      await window.imgSearchAPI.terminateWorker();
       this.$router.back();
+    },
+    async increaseWorker() {
+      this.currentWorkers = await window.imgSearchAPI.increaseWorkerByOne();
+    },
+    async getNumberOfWorkers() {
+      this.currentWorkers = await window.imgSearchAPI.getTotalNumberOfWorkers();
+      // console.log(this.currentWorkers);
     },
     async copyPickedPath(path) {
       if (!path) {
@@ -148,6 +176,7 @@ export default {
       if (filesPaths) {
         this.start_indexing = true;
         await window.imgSearchAPI.startWorker();
+        await this.getNumberOfWorkers();
         this.startIndexing();
       }
       // this.searchImages(filesPaths);
@@ -199,9 +228,12 @@ export default {
           img_path: this.selectedFilePaths[i],
           text_data: text,
         });
+        console.log(text);
       }
-      this.start_indexing = false;
-      await window.imgSearchAPI.terminateWorker();
+      if (this.start_indexing == true) {
+        this.start_indexing = false;
+        await window.imgSearchAPI.terminateWorker();
+      }
       // terminate worker
       // await worker.terminate();
     },

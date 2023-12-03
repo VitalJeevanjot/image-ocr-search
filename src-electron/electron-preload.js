@@ -61,4 +61,10 @@ contextBridge.exposeInMainWorld("imgSearchAPI", {
   stopSearchTextInApp: async () => {
     return await ipcRenderer.invoke("stop-search-text-in-app");
   },
+  increaseWorkerByOne: async () => {
+    return await ipcRenderer.invoke("increase-workers");
+  },
+  getTotalNumberOfWorkers: async () => {
+    return await ipcRenderer.invoke("get-number-of-workers");
+  },
 });
