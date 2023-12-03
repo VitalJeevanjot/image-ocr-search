@@ -86,8 +86,11 @@
         {{ uuidToDelete }}
       </q-card-section>
       <q-separator dark />
-      <q-card-section class="q-pt-sm text-caption text-white">
-        {{ pathsToDelete }}
+      <q-card-section
+        class="q-pt-sm text-caption text-white"
+        style="white-space: pre-line"
+      >
+        {{ pathsToDelete.replace(/,/gi, "\n") }}
       </q-card-section>
       <q-separator dark />
       <q-card-section>
