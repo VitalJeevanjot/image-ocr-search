@@ -61,7 +61,18 @@
     <q-dialog v-model="imageInfoDialog">
       <q-card dark>
         <q-card-section>
-          <div class="text-h6">Image text data.</div>
+          <div class="row">
+            <div class="text-subtitle1">Image text data.</div>
+            <q-space />
+            <q-btn
+              flat
+              round
+              dense
+              icon="close"
+              color="grey-5 bg-grey-10"
+              @click="closeImageInfoDialog"
+            />
+          </div>
         </q-card-section>
         <q-separator dark />
         <q-card-section class="q-pt-sm text-caption text-grey-6">
@@ -94,14 +105,6 @@
         <q-card-section class="q-pt-xs">
           {{ textData[currentIndex] }}
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="Close"
-            color="grey-5"
-            @click="closeImageInfoDialog"
-          />
-        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
