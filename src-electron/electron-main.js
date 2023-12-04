@@ -140,7 +140,7 @@ async function handleTerminateWorker() {
 async function processImage(event, img) {
   var result = [];
   // console.log(schedulers);
-  let _schedulers = currentSchedulers;
+  let _schedulers = img.length;
 
   let _result = [];
   for (var i = 0; i < _schedulers; i++) {
