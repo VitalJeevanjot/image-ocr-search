@@ -226,7 +226,7 @@ export default {
       imagesCount: 0,
       thumbnails: [],
       textData: [],
-      currentIndex: null,
+      currentIndex: 0,
       imageInfoDialog: false,
       searchingLocalText: false,
       pageJumperDialog: false,
@@ -301,6 +301,7 @@ export default {
     async getImagesData() {
       this.imagesPaths = [];
       this.thumbnails = [];
+      this.textData = [];
       var current_uuid = LocalStorage.getItem(
         "current_uuid__££__image_ocr_search2"
       );
