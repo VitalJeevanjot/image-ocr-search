@@ -49,7 +49,7 @@
           dense
           icon="arrow_back"
           squared
-          :disable="currentPage + 1 <= 1 ? true : false"
+          :disable="disableMoveBackwards"
           @click="decrementPage"
         />
         <q-btn
@@ -57,7 +57,7 @@
           dense
           icon="arrow_forward"
           squared
-          :disable="currentPage + 1 >= totalPages ? true : false"
+          :disable="disableMoveForwards"
           @click="incrementPage"
         />
         <q-btn
@@ -231,6 +231,8 @@ export default {
       searchingLocalText: false,
       pageJumperDialog: false,
       jumpToPageValue: 1,
+      disableMoveForwards: false,
+      disableMoveBackwards: false,
     };
   },
   methods: {
@@ -269,12 +271,31 @@ export default {
       window.imgSearchAPI.searchTextInApp(this.search_local_text);
       this.searchingLocalText = true;
     },
+    disableEnableMovingButtons(incrementing) {
+      // for breif moment to avoid ui conflicts
+      this.disableMoveForwards = true;
+      this.disableMoveBackwards = true;
+      setTimeout(() => {
+        if (this.currentPage + 1 >= this.totalPages && incrementing) {
+          this.disableMoveForwards = true;
+          this.disableMoveBackwards = false;
+        } else if (this.currentPage + 1 <= 1 && !incrementing) {
+          this.disableMoveForwards = false;
+          this.disableMoveBackwards = true;
+        } else {
+          this.disableMoveForwards = false;
+          this.disableMoveBackwards = false;
+        }
+      }, 500);
+    },
     async incrementPage() {
       this.currentPage++;
+      this.disableEnableMovingButtons(true);
       await this.getImagesData();
     },
     async decrementPage() {
       this.currentPage--;
+      this.disableEnableMovingButtons(false);
       await this.getImagesData();
     },
     async getImagesData() {

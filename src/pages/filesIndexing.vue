@@ -225,6 +225,7 @@ export default {
         i = i + (current_workers - 1);
         text = await window.imgSearchAPI.processImg(paths);
         // console.log(text);
+        console.log(text);
         for (var k = 0; k < current_workers; k++) {
           this.progress_value = parseInt(
             ((i + 1) / this.selectedFilePaths.length) * 100
