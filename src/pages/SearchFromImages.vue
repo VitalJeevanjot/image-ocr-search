@@ -60,6 +60,13 @@
           :disable="currentPage + 1 >= totalPages ? true : false"
           @click="incrementPage"
         />
+        <q-btn
+          class="text-white self-center bg-grey-10 q-ml-sm"
+          dense
+          icon="double_arrow"
+          squared
+          @click="pageJumperDialog = true"
+        />
       </div>
     </q-page-sticky>
 
@@ -146,6 +153,48 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="pageJumperDialog" persistent>
+      <q-card dark>
+        <q-card-section>
+          <div class="row">
+            <div class="text-subtitle1">Jump to page:</div>
+            <q-space />
+            <q-btn
+              flat
+              round
+              dense
+              class="q-ml-sm"
+              icon="close"
+              color="grey-5 bg-grey-10"
+              @click="pageJumperDialog = false"
+            />
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <div class="row">
+            <q-input
+              v-model="jumpToPageValue"
+              filled
+              min="1"
+              type="number"
+              color="grey-8"
+              dark
+              dense
+            ></q-input>
+            <q-btn
+              icon="auto_stories"
+              class="q-ml-sm bg-grey-8 text-white"
+              round
+              @click="jumpToPageFunction"
+            >
+              <q-tooltip>Jump to page {{ jumpToPageValue }}</q-tooltip>
+            </q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -180,6 +229,8 @@ export default {
       currentIndex: null,
       imageInfoDialog: false,
       searchingLocalText: false,
+      pageJumperDialog: false,
+      jumpToPageValue: 1,
     };
   },
   methods: {
@@ -188,6 +239,14 @@ export default {
         this.searchingLocalText = false;
         window.imgSearchAPI.stopSearchTextInApp();
       }
+    },
+    jumpToPageFunction() {
+      this.currentPage =
+        this.jumpToPageValue > this.totalPages
+          ? parseInt(this.totalPages) - 1
+          : parseInt(this.jumpToPageValue) - 1;
+      this.pageJumperDialog = false;
+      this.getImagesData();
     },
     openImage(path) {
       window.imgSearchAPI.openImageInDefault(path);
