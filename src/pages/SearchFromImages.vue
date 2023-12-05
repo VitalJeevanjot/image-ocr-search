@@ -14,13 +14,21 @@
     <div class="row justify-center">
       <q-input
         v-model="search_text"
+        @update:model-value="updateSearchText"
         filled
         color="grey-8"
         dark
         dense
         style="min-width: 250px; width: 40vw"
       ></q-input>
-      <q-btn icon="search" class="q-ml-sm bg-grey-8 text-white" round>
+      <q-btn
+        :icon="inSearchMode == false ? 'search' : 'close'"
+        class="q-ml-sm bg-grey-8 text-white"
+        round
+        @click="
+          inSearchMode == false ? searchImagesWithText() : clearSearchMode()
+        "
+      >
         <q-tooltip>Search text</q-tooltip>
       </q-btn>
     </div>
@@ -233,6 +241,7 @@ export default {
       jumpToPageValue: 1,
       disableMoveForwards: false,
       disableMoveBackwards: false,
+      inSearchMode: false,
     };
   },
   methods: {
@@ -241,6 +250,24 @@ export default {
         this.searchingLocalText = false;
         window.imgSearchAPI.stopSearchTextInApp();
       }
+    },
+    updateSearchText() {
+      if (this.inSearchMode == true) {
+        this.currentPage = 0;
+        this.inSearchMode = false;
+        this.getImagesData();
+      }
+    },
+    searchImagesWithText() {
+      this.currentPage = 0;
+      this.inSearchMode = true;
+      this.getImagesData();
+    },
+    clearSearchMode() {
+      this.currentPage = 0;
+      this.search_text = "";
+      this.inSearchMode = false;
+      this.getImagesData();
     },
     jumpToPageFunction() {
       this.currentPage =
@@ -305,12 +332,40 @@ export default {
       var current_uuid = LocalStorage.getItem(
         "current_uuid__££__image_ocr_search2"
       );
-      var data = await window.indexedDb.pathsIndexed
-        .where("uuid")
-        .equals(current_uuid)
-        .offset(this.currentPage * this.imagesPerPage)
-        .limit(this.imagesPerPage)
-        .toArray();
+      var data = null;
+      if (this.inSearchMode) {
+        data = await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(current_uuid)
+          .filter((val) =>
+            val.text_data
+              .toLowerCase()
+              .includes(this.search_text.trim().toLowerCase())
+          )
+          .offset(this.currentPage * this.imagesPerPage)
+          .limit(this.imagesPerPage)
+          .toArray();
+        this.totalResults = await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(current_uuid)
+          .filter((val) =>
+            val.text_data
+              .toLowerCase()
+              .includes(this.search_text.trim().toLowerCase())
+          )
+          .count();
+      } else {
+        data = await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(current_uuid)
+          .offset(this.currentPage * this.imagesPerPage)
+          .limit(this.imagesPerPage)
+          .toArray();
+        this.totalResults = await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(current_uuid)
+          .count();
+      }
       // console.log(data);
       var length = data.length > 30 ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
@@ -320,10 +375,6 @@ export default {
         );
         this.textData.push(data[i].text_data);
       }
-      this.totalResults = await window.indexedDb.pathsIndexed
-        .where("uuid")
-        .equals(current_uuid)
-        .count();
       this.totalPages =
         parseInt(this.totalResults / this.imagesPerPage) +
         (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
