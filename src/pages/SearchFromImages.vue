@@ -15,6 +15,7 @@
       <q-toggle
         v-model="isSearchByFileNameOn"
         icon="abc"
+        @update:model-value="updateSearchStatus"
         label="Find by file name"
         style="color: white"
       >
@@ -24,7 +25,7 @@
       </q-toggle>
       <q-input
         v-model="search_text"
-        @update:model-value="updateSearchText"
+        @update:model-value="updateSearchStatus"
         filled
         color="grey-8"
         dark
@@ -263,7 +264,7 @@ export default {
         window.imgSearchAPI.stopSearchTextInApp();
       }
     },
-    updateSearchText() {
+    updateSearchStatus() {
       if (this.inSearchMode == true) {
         this.inSearchMode = false;
       }
