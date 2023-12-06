@@ -339,7 +339,19 @@ export default {
         "current_uuid__££__image_ocr_search2"
       );
       var data = null;
-      if (this.inSearchMode) {
+      if (this.inSearchMode && this.isSearchByFileNameOn == true) {
+        data = await window.indexedDb.pathsIndexed
+          .where("uuid")
+          .equals(current_uuid)
+          .filter((val) =>
+            val.img_path
+              .toLowerCase()
+              .includes(this.search_text.trim().toLowerCase())
+          )
+          .offset(this.currentPage * this.imagesPerPage)
+          .limit(this.imagesPerPage)
+          .toArray();
+      } else if (this.inSearchMode && this.isSearchByFileNameOn == false) {
         data = await window.indexedDb.pathsIndexed
           .where("uuid")
           .equals(current_uuid)
@@ -351,15 +363,6 @@ export default {
           .offset(this.currentPage * this.imagesPerPage)
           .limit(this.imagesPerPage)
           .toArray();
-        this.totalResults = await window.indexedDb.pathsIndexed
-          .where("uuid")
-          .equals(current_uuid)
-          .filter((val) =>
-            val.text_data
-              .toLowerCase()
-              .includes(this.search_text.trim().toLowerCase())
-          )
-          .count();
       } else {
         data = await window.indexedDb.pathsIndexed
           .where("uuid")
@@ -367,11 +370,8 @@ export default {
           .offset(this.currentPage * this.imagesPerPage)
           .limit(this.imagesPerPage)
           .toArray();
-        this.totalResults = await window.indexedDb.pathsIndexed
-          .where("uuid")
-          .equals(current_uuid)
-          .count();
       }
+      this.totalResults = data.length;
       // console.log(data);
       var length = data.length > 30 ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
