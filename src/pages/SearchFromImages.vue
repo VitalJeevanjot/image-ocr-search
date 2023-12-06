@@ -26,6 +26,9 @@
       <q-input
         v-model="search_text"
         @update:model-value="updateSearchStatus"
+        @keyup.enter="
+          inSearchMode == false ? searchImagesWithText() : clearSearchMode()
+        "
         filled
         color="grey-8"
         dark
@@ -150,6 +153,7 @@
             <q-input
               v-model="search_local_text"
               @update:model-value="setTextStatus"
+              @keyup.enter="highlightSearchedText"
               ref="local_search"
               filled
               color="grey-8"
@@ -317,6 +321,7 @@ export default {
         if (this.currentPage + 1 >= this.totalPages) {
           this.disableMoveForwards = true;
           this.disableMoveBackwards = false;
+
           // console.log("1----");
         } else if (this.currentPage + 1 <= 1) {
           this.disableMoveForwards = false;
@@ -325,6 +330,7 @@ export default {
         } else {
           this.disableMoveForwards = false;
           this.disableMoveBackwards = false;
+          // console.log("3----");
         }
       }, 400);
     },
@@ -383,6 +389,9 @@ export default {
         }
       }
       this.totalResults = _data.length;
+      this.totalPages =
+        parseInt(this.totalResults / this.imagesPerPage) +
+        (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
       // console.log(data);
       var length =
         data.length > this.imagesPerPage ? this.imagesPerPage : data.length;
@@ -393,9 +402,6 @@ export default {
         );
         this.textData.push(data[i].text_data);
       }
-      this.totalPages =
-        parseInt(this.totalResults / this.imagesPerPage) +
-        (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
       this.showingImagesInPage = length;
     },
   },
