@@ -47,6 +47,11 @@
         <q-tooltip>Search text</q-tooltip>
       </q-btn>
     </div>
+    <div class="row justify-center q-mt-xs">
+      <span class="text-caption text-grey-3" v-if="inSearchMode">
+        Searching: {{ search_text }}</span
+      >
+    </div>
 
     <q-page-sticky
       position="top-right"
@@ -115,7 +120,8 @@
               icon="info"
               rounded
               @click="openImageInfoDialog(index)"
-            />
+              ><q-tooltip>More info.</q-tooltip></q-btn
+            >
           </div>
           <p
             style="width: 20vw; overflow-wrap: break-word"
@@ -285,10 +291,14 @@ export default {
       this.getImagesData();
     },
     jumpToPageFunction() {
-      this.currentPage =
-        this.jumpToPageValue > this.totalPages
-          ? parseInt(this.totalPages) - 1
-          : parseInt(this.jumpToPageValue) - 1;
+      if (this.jumpToPageValue > this.totalPages) {
+        this.currentPage = parseInt(this.totalPages) - 1;
+      } else if (this.jumpToPageValue < 1) {
+        this.currentPage = 0;
+      } else {
+        this.currentPage = parseInt(this.jumpToPageValue) - 1;
+      }
+      this.jumpToPageValue = "";
       this.pageJumperDialog = false;
       this.getImagesData();
     },
@@ -314,20 +324,19 @@ export default {
       this.searchingLocalText = true;
     },
     disableEnableMovingButtons() {
-      // for breif moment to avoid ui conflicts
+      // for brief moment to avoid ui conflicts
       this.disableMoveForwards = true;
       this.disableMoveBackwards = true;
       setTimeout(() => {
-        if (this.currentPage + 1 >= this.totalPages) {
+        if (this.currentPage + 1 >= this.totalPages && this.totalPages > 1) {
           this.disableMoveForwards = true;
           this.disableMoveBackwards = false;
-
           // console.log("1----");
-        } else if (this.currentPage + 1 <= 1) {
+        } else if (this.currentPage + 1 <= 1 && this.totalPages > 1) {
           this.disableMoveForwards = false;
           this.disableMoveBackwards = true;
           // console.log("2----");
-        } else {
+        } else if (this.currentPage + 1 > 1 && this.totalPages > 1) {
           this.disableMoveForwards = false;
           this.disableMoveBackwards = false;
           // console.log("3----");
@@ -392,7 +401,7 @@ export default {
       this.totalPages =
         parseInt(this.totalResults / this.imagesPerPage) +
         (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
-      // console.log(data);
+      console.log(this.totalPages);
       var length =
         data.length > this.imagesPerPage ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
