@@ -317,11 +317,16 @@ export default {
         if (this.currentPage + 1 >= this.totalPages) {
           this.disableMoveForwards = true;
           this.disableMoveBackwards = false;
+          // console.log("1----");
         } else if (this.currentPage + 1 <= 1) {
           this.disableMoveForwards = false;
           this.disableMoveBackwards = true;
+          // console.log("2----");
+        } else {
+          this.disableMoveForwards = false;
+          this.disableMoveBackwards = false;
         }
-      }, 500);
+      }, 400);
     },
     async incrementPage() {
       this.currentPage++;
@@ -339,42 +344,48 @@ export default {
       var current_uuid = LocalStorage.getItem(
         "current_uuid__££__image_ocr_search2"
       );
-      var data = null;
+      var data = [];
+      var _data = await window.indexedDb.pathsIndexed
+        .where("uuid")
+        .equals(current_uuid)
+        .toArray();
+      const _val1 = this.currentPage * this.imagesPerPage;
       if (this.inSearchMode && this.isSearchByFileNameOn == true) {
-        data = await window.indexedDb.pathsIndexed
-          .where("uuid")
-          .equals(current_uuid)
-          .filter((val) =>
-            val.img_path
-              .toLowerCase()
-              .includes(this.search_text.trim().toLowerCase())
-          )
-          .offset(this.currentPage * this.imagesPerPage)
-          .limit(this.imagesPerPage)
-          .toArray();
+        _data = _data.filter((val) =>
+          val.img_path
+            .toLowerCase()
+            .includes(this.search_text.trim().toLowerCase())
+        );
+        for (var i = _val1; i < _val1 + this.imagesPerPage; i++) {
+          if (!_data[i]) {
+            break;
+          }
+          data.push(_data[i]);
+        }
       } else if (this.inSearchMode && this.isSearchByFileNameOn == false) {
-        data = await window.indexedDb.pathsIndexed
-          .where("uuid")
-          .equals(current_uuid)
-          .filter((val) =>
-            val.text_data
-              .toLowerCase()
-              .includes(this.search_text.trim().toLowerCase())
-          )
-          .offset(this.currentPage * this.imagesPerPage)
-          .limit(this.imagesPerPage)
-          .toArray();
+        _data = _data.filter((val) =>
+          val.text_data
+            .toLowerCase()
+            .includes(this.search_text.trim().toLowerCase())
+        );
+        for (var i = _val1; i < _val1 + this.imagesPerPage; i++) {
+          if (!_data[i]) {
+            break;
+          }
+          data.push(_data[i]);
+        }
       } else {
-        data = await window.indexedDb.pathsIndexed
-          .where("uuid")
-          .equals(current_uuid)
-          .offset(this.currentPage * this.imagesPerPage)
-          .limit(this.imagesPerPage)
-          .toArray();
+        for (var i = _val1; i < _val1 + this.imagesPerPage; i++) {
+          if (!_data[i]) {
+            break;
+          }
+          data.push(_data[i]);
+        }
       }
-      this.totalResults = data.length;
+      this.totalResults = _data.length;
       // console.log(data);
-      var length = data.length > 30 ? this.imagesPerPage : data.length;
+      var length =
+        data.length > this.imagesPerPage ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
         this.imagesPaths.push(data[i].img_path);
         this.thumbnails.push(
