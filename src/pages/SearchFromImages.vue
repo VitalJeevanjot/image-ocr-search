@@ -401,7 +401,7 @@ export default {
       this.totalPages =
         parseInt(this.totalResults / this.imagesPerPage) +
         (this.totalResults % this.imagesPerPage > 0 ? 1 : 0);
-      console.log(this.totalPages);
+      // console.log(this.totalPages);
       var length =
         data.length > this.imagesPerPage ? this.imagesPerPage : data.length;
       for (var i = 0; i < length; i++) {
