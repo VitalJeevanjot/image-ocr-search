@@ -12,6 +12,16 @@
     </q-page-sticky>
 
     <div class="row justify-center">
+      <q-toggle
+        v-model="isSearchByFileNameOn"
+        icon="abc"
+        label="Find by file name"
+        style="color: white"
+      >
+        <q-tooltip class="text-subtitle1"
+          >Search by file name instead</q-tooltip
+        >
+      </q-toggle>
       <q-input
         v-model="search_text"
         @update:model-value="updateSearchText"
@@ -20,6 +30,7 @@
         dark
         dense
         style="min-width: 250px; width: 40vw"
+        class="q-ml-md"
       ></q-input>
       <q-btn
         :icon="inSearchMode == false ? 'search' : 'close'"
@@ -112,7 +123,7 @@
       </div>
     </div>
 
-    <q-dialog v-model="imageInfoDialog">
+    <q-dialog v-model="imageInfoDialog" persistent>
       <q-card dark style="min-width: 250px; width: 50vw">
         <q-card-section>
           <div class="row">
@@ -242,6 +253,7 @@ export default {
       disableMoveForwards: false,
       disableMoveBackwards: false,
       inSearchMode: false,
+      isSearchByFileNameOn: false,
     };
   },
   methods: {
@@ -253,9 +265,7 @@ export default {
     },
     updateSearchText() {
       if (this.inSearchMode == true) {
-        this.currentPage = 0;
         this.inSearchMode = false;
-        this.getImagesData();
       }
     },
     searchImagesWithText() {
@@ -298,37 +308,33 @@ export default {
       window.imgSearchAPI.searchTextInApp(this.search_local_text);
       this.searchingLocalText = true;
     },
-    disableEnableMovingButtons(incrementing) {
+    disableEnableMovingButtons() {
       // for breif moment to avoid ui conflicts
       this.disableMoveForwards = true;
       this.disableMoveBackwards = true;
       setTimeout(() => {
-        if (this.currentPage + 1 >= this.totalPages && incrementing) {
+        if (this.currentPage + 1 >= this.totalPages) {
           this.disableMoveForwards = true;
           this.disableMoveBackwards = false;
-        } else if (this.currentPage + 1 <= 1 && !incrementing) {
+        } else if (this.currentPage + 1 <= 1) {
           this.disableMoveForwards = false;
           this.disableMoveBackwards = true;
-        } else {
-          this.disableMoveForwards = false;
-          this.disableMoveBackwards = false;
         }
       }, 500);
     },
     async incrementPage() {
       this.currentPage++;
-      this.disableEnableMovingButtons(true);
       await this.getImagesData();
     },
     async decrementPage() {
       this.currentPage--;
-      this.disableEnableMovingButtons(false);
       await this.getImagesData();
     },
     async getImagesData() {
       this.imagesPaths = [];
       this.thumbnails = [];
       this.textData = [];
+      this.disableEnableMovingButtons();
       var current_uuid = LocalStorage.getItem(
         "current_uuid__££__image_ocr_search2"
       );
