@@ -2,7 +2,7 @@
   "name": "image-ocr-search",
   "version": "0.0.1",
   "description": "Search text inside images",
-  "productName": "Image OCR Search",
+  "productName": "Image Search OCR",
   "author": "Jeevanjot Singh <40867747+VitalJeevanjot@users.noreply.github.com>",
   "private": true,
   "scripts": {
