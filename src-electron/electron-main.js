@@ -95,7 +95,7 @@ async function handleStartWorker() {
     schedulers.push(await Tesseract.createScheduler());
     workers.push(
       await Tesseract.createWorker("eng", 1, {
-        langPath: path.resolve("./public/languageData"),
+        langPath: path.resolve(__dirname, "languageData"),
       })
     );
     currentSchedulers++;
@@ -105,7 +105,7 @@ async function handleStartWorker() {
 
 async function handleIncreasingWorkers() {
   let worker = await Tesseract.createWorker("eng", 1, {
-    langPath: path.resolve("./public/languageData"),
+    langPath: path.resolve(__dirname, "languageData"),
   });
   workers.push(worker);
   schedulers.push(await Tesseract.createScheduler());

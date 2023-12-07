@@ -170,7 +170,7 @@ module.exports = configure(function (/* ctx */) {
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
-      bundler: "packager", // 'packager' or 'builder'
+      bundler: "builder", // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -182,11 +182,18 @@ module.exports = configure(function (/* ctx */) {
         // Windows only
         // win32metadata: { ... }
       },
-
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        appId: "image-ocr-search",
+        appId: "27126VitalVictor.ImageSearchOCR",
+        win: {
+          target: "appx", // or appx or more
+        },
+        appx: {
+          displayName: "Image Search OCR",
+          publisher: "CN=D8EA149B-EABF-46F9-A877-703D35BFD389",
+          publisherDisplayName: "VitalVictor",
+          languages: "en-GB",
+        },
       },
     },
 
