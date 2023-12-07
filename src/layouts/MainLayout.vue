@@ -18,6 +18,10 @@
           @click="toggleLeftDrawer"
         /> -->
         <q-toolbar-title> Image Search OCR </q-toolbar-title>
+        <q-space />
+        <q-btn round icon="info" dense flat @click="openHelpPage"
+          ><q-tooltip>Learn about the usage of app.</q-tooltip></q-btn
+        >
         <!-- <div>ocrs</div> -->
         <!-- <div>characters</div>
         <div>faces</div> -->
@@ -163,6 +167,14 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
     };
+  },
+  methods: {
+    openHelpPage() {
+      window.open(
+        "https://gist.github.com/VitalJeevanjot/3cb7921cfae09b99de98e04430fb8f85",
+        "_blank"
+      );
+    },
   },
   mounted() {
     window.indexedDb = new Dexie("ImagesSearch");
