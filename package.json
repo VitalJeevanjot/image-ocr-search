@@ -1,5 +1,5 @@
 {
-  "name": "image-ocr-search",
+  "name": "imageSearchOcr",
   "version": "0.0.1",
   "description": "Search text inside images",
   "productName": "Image Search OCR",

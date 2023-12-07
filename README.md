@@ -1,4 +1,4 @@
-# Image OCR Search (image-ocr-search)
+# Image Search OCR
 
 Search small images inside large images
 
