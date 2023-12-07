@@ -280,6 +280,10 @@ export default {
       }
     },
     searchImagesWithText() {
+      if (this.search_text.trim() == "") {
+        this.clearSearchMode();
+        return;
+      }
       this.currentPage = 0;
       this.inSearchMode = true;
       this.getImagesData();

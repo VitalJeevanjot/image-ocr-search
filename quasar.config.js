@@ -195,6 +195,12 @@ module.exports = configure(function (/* ctx */) {
           languages: "en-GB",
         },
       },
+
+      // builder: {
+      //   // https://www.electron.build/configuration/configuration
+
+      //   appId: "image-ocr-search",
+      // },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
