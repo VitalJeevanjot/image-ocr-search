@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      # Skip the Electron binary download: lint and unit tests don't need it.
+      - run: yarn install --frozen-lockfile --ignore-scripts
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - run: yarn lint
+      - run: yarn test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      # Full install: Electron's postinstall downloads the app binary.
+      - run: yarn install --frozen-lockfile
+      # Builds the app, then drives it with Playwright on a virtual display.
+      - run: xvfb-run -a yarn test:e2e

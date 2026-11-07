@@ -6,11 +6,12 @@
   "author": "Jeevanjot Singh <40867747+VitalJeevanjot@users.noreply.github.com>",
   "private": true,
   "scripts": {
-    "lint": "eslint --ext .js,.vue ./",
+    "lint": "eslint --ext .js,.mjs,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev",
-    "build": "quasar build"
+    "test": "node --test test/image-files.test.mjs",
+    "test:e2e": "quasar build -m electron --skip-pkg && node --test test/e2e/index-and-search.e2e.mjs",
+    "dev": "quasar dev -m electron",
+    "build": "quasar build -m electron"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -30,11 +31,12 @@
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",
+    "playwright-core": "^1.48.0",
     "postcss": "^8.4.14",
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": "^18 || ^16 || ^14.19",
+    "node": "^22 || ^20 || ^18",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

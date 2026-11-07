@@ -31,3 +31,6 @@ yarn-error.log*
 
 # local .env files
 .env.local*
+
+# Tesseract.js language cache written to the working directory by tests
+/eng.traineddata
