@@ -6,10 +6,11 @@ import {
   ipcMain,
   shell,
 } from "electron";
-import { readdir, stat, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "path";
 import os from "os";
 import Tesseract from "tesseract.js";
+import { isAllowedImagePath, listImageFiles } from "./image-files.mjs";
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -90,7 +91,11 @@ var schedulers = [];
 var totalSchedulers = 4;
 var currentSchedulers = 0;
 async function handleStartWorker() {
+  // Reset both lists together: processImage pairs schedulers[i] with
+  // workers[i], so stale schedulers from an earlier run would misalign them.
   workers = [];
+  schedulers = [];
+  currentSchedulers = 0;
   for (let i = 0; i < totalSchedulers; i++) {
     schedulers.push(await Tesseract.createScheduler());
     workers.push(
@@ -144,7 +149,13 @@ async function processImage(event, img) {
 
   let _result = [];
   for (var i = 0; i < _schedulers; i++) {
-    _result.push(schedulers[i].addJob("recognize", img[i]));
+    // A path that isn't an image yields empty text instead of being read,
+    // so the result array still lines up with the renderer's batch.
+    _result.push(
+      isAllowedImagePath(img[i])
+        ? schedulers[i].addJob("recognize", img[i])
+        : Promise.resolve({ data: { text: "" } })
+    );
     // console.log("pushed job in scheduler-> " + i);
     // console.log(_result);
   }
@@ -159,7 +170,7 @@ async function processImage(event, img) {
 }
 
 async function getThumbnail(e, path) {
-  // console.log(path);
+  if (!isAllowedImagePath(path)) return null;
   let result = await nativeImage.createThumbnailFromPath(path, {
     width: 300,
     height: 300,
@@ -168,14 +179,11 @@ async function getThumbnail(e, path) {
 }
 
 async function handleImageOpen(e, path) {
+  // Only hand image files to the OS. shell.openPath would also launch
+  // executables if the renderer ever sent one.
+  if (!isAllowedImagePath(path)) return;
   let error = await shell.openPath(path);
   if (error) console.log(error);
-}
-
-function isImage(fileName) {
-  const extensions = ["jpg", "png"];
-  const ext = fileName.split(".").pop();
-  return extensions.find((_ext) => _ext == ext);
 }
 
 async function handleFileSelect(e) {
@@ -194,31 +202,7 @@ async function handleFolderOpen(event) {
     properties: ["openDirectory", "multiSelections"],
   });
   if (!canceled) {
-    let dirContent = [];
-    let filesPaths = [];
-
-    try {
-      for (let i = 0; i < folderPaths?.length; i++) {
-        dirContent = await readdir(folderPaths[i]);
-        // console.log(dirContent);
-        for (let k = 0; k < dirContent?.length; k++) {
-          const stats = await stat(`${folderPaths[i]}\\${dirContent[k]}`);
-          const imageType = isImage(dirContent[k]);
-          // console.log(k);
-          if (stats.isFile() && imageType) {
-            try {
-              filesPaths.push(`${folderPaths[i]}\\${dirContent[k]}`);
-            } catch (err) {
-              console.log("err2");
-              console.log(err);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.log("err1");
-      console.log(err);
-    }
+    const filesPaths = await listImageFiles(folderPaths);
     return { filesPaths, folderPaths };
   } else {
     return 0;
@@ -226,6 +210,7 @@ async function handleFolderOpen(event) {
 }
 
 async function getImageData(event, path) {
+  if (!isAllowedImagePath(path)) return null;
   const contents = await readFile(path);
   // const base64Image = await Buffer.from(contents).toString("base64");
   // const dataUrl = `data:image/${isImage(path)};base64,${base64Image}`;
